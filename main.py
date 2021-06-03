@@ -16,32 +16,34 @@ from modules.imagelist import imagelist
 #image slider
 from modules.slideimages import slideimages
 
-list_of_validation = ['Correct', 'PLAX', 'NOT PLAX']
-
-list_of_conditions = ['Mitral Valve Regurgitation','Aortic Valve Regurgitation','Tricuspid Valve Regurgitation','Pulmonary Valve Regurgitation','Aortic Valve Stenosis','Mitral Valve Stenosis','Tricuspid Valve Stenosis','Pulmonary Valve Stenosis','Mitral Valve Prolapse']
+list_of_validation = ['Correct', 'NOT CORRECT']
 
 list_of_views = ['Parasternal long axis (PLAX)','Parasternal short axis(PSAX)','Apical Four Chamber(A4C)','Apical three chamber (A3C)','Apical two chamber(A2C)','Suprasternal(SSN)','Subcostal']
 
-list_of_severities = ['Mormal','Borderline rhd','Definite rhd']
+list_of_conditions = ['Mitral Valve Regurgitation','Aortic Valve Regurgitation','Tricuspid Valve Regurgitation','Pulmonary Valve Regurgitation','Aortic Valve Stenosis','Mitral Valve Stenosis','Tricuspid Valve Stenosis','Pulmonary Valve Stenosis','Mitral Valve Prolapse']
+
+list_of_severities = ['Normal','Borderline rhd','Definite rhd']
     
-# }
+
 # external CSS stylesheets
 external_stylesheets = ["https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css",
                         "https://fonts.googleapis.com/css?family=Raleway:400,400i,700,700i",
                         "https://fonts.googleapis.com/css?family=Product+Sans:400,400i,700,700i"]
 
 dash_app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
-dash_app.title = "Quality Control Check"
 
 app = dash_app.server
 x = 0 #the default image, my code has been built around the default being 0.#esp in single click.
 y = 0 #default1 when both clicked. #used when next_time_greater thanprev_timestamp
 z = 0 #default2 when both clicked. #used when prev_time_greater than next_timestamp
 imagenames = imagelist('./assets/static/images')
-#num_images = len(imagenames)
+
 dash_app.title = "RHD Annotation Quality Control Check"
 
 df = pd.read_csv('RHD-Data - ValidationSet.csv')
+csv_list = []
+for row_index, row in df.iterrows():
+    csv_list.append((row['FILENAME'],  ',', ' ', row['VIEW'], ',', ' ', row['COLOUR']))
 
 
 dash_app.layout = html.Div([
@@ -51,8 +53,11 @@ dash_app.layout = html.Div([
     ], className="banner"),
  html.Div(style = {'textAlign' : 'center'},
                         children = [
-                                    html.Div(html.Img(id = 'image-seen',src = imagenames[x],width = '700px',height = '500px',)),
-
+                                    html.Div(html.Img(id = 'image-seen',src = imagenames[x],width = '700px',height = '500px')),
+                                        
+                                        html.P(),
+                                        html.Div(children = [html.Div(id='annotation',children='Current annotation of the image')]),
+                                        html.Div(csv_list[0]),
                                         html.P(),
                                         html.Div(style = {'display': 'flex','align-items':'center','justify-content':'center'},
                                         children = [html.P(children = [dcc.Dropdown(id = 'validate',
@@ -81,19 +86,26 @@ dash_app.layout = html.Div([
                                                                             style={'height': '30px', 'width': '800px', 'textAlign' : 'center'}),
                                         html.P(),
                                         html.P(children = [ html.Div(id = 'prevend'),html.Button('Prev',id = 'prevbutton'),html.Button('Next', id = 'nextbutton'),html.Div(id = 'nextend')],),
-                                   
+
+                                        html.P(),
+                                        html.Button('Submit', id = 'submit',style = {'color' : 'red'},autoFocus = True),
+                                        html.Div(id = 'thesubmitted'),
+                                     
+                                    html.P(),
                                     html.Div(children = [html.Div(id='inference',children='Annotation for images'),
                                     
                                     dash_table.DataTable(
                                                 id='table',
                                                 columns=[{"name": i, "id": i} for i in df.columns],
                                                 data=df.to_dict('records'),
-                                                page_size=10)
+                                                export_format="csv",
+                                                page_size=5)
 
                                    
                                                     ])])
                                     ])])
 ])
+
 #Manage the image slider.
 @dash_app.callback(
     dash.dependencies.Output('image-seen','src'),
@@ -106,6 +118,7 @@ dash_app.layout = html.Div([
 def slide_images(ncp,ncn,ncpts,ncnts,current_image_path):
     nextimage = slideimages(ncp,ncn,ncpts,ncnts,current_image_path,imagenames)
     return nextimage
+
 
 if __name__ == '__main__':
     dash_app.run_server(debug = True)
