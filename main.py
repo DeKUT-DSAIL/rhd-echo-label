@@ -15,6 +15,8 @@ import datetime
 from modules.imagelist import imagelist
 #image slider
 from modules.slideimages import slideimages
+# annotation slider
+from modules.slideannotation import slideannotation
 
 list_of_validation = ['Correct', 'NOT CORRECT']
 
@@ -36,15 +38,23 @@ app = dash_app.server
 x = 0 #the default image, my code has been built around the default being 0.#esp in single click.
 y = 0 #default1 when both clicked. #used when next_time_greater thanprev_timestamp
 z = 0 #default2 when both clicked. #used when prev_time_greater than next_timestamp
+
 imagenames = imagelist('./assets/static/images')
+
 
 dash_app.title = "RHD Annotation Quality Control Check"
 
-df = pd.read_csv('RHD-Data - ValidationSet.csv')
-csv_list = []
-for row_index, row in df.iterrows():
-    csv_list.append((row['FILENAME'],  ',', ' ', row['VIEW'], ',', ' ', row['COLOUR']))
 
+df = pd.read_csv('RHD-Data - ValidationSet.csv')
+
+annotation = []
+currentann = ''
+for index, row in df.iterrows():
+    annotation.append((row['FILENAME'], row['VIEW'], row['COLOUR']))
+    annotation.sort()
+    currentann = annotation[x]
+    print(annotation)
+    
 
 dash_app.layout = html.Div([
     html.Div([
@@ -54,10 +64,11 @@ dash_app.layout = html.Div([
  html.Div(style = {'textAlign' : 'center'},
                         children = [
                                     html.Div(html.Img(id = 'image-seen',src = imagenames[x],width = '700px',height = '500px')),
+
                                         
                                         html.P(),
                                         html.Div(children = [html.Div(id='annotation',children='Current annotation of the image')]),
-                                        html.Div(csv_list[0]),
+                                        html.Div(id = 'imagelen', children = currentann),
                                         html.P(),
                                         html.Div(style = {'display': 'flex','align-items':'center','justify-content':'center'},
                                         children = [html.P(children = [dcc.Dropdown(id = 'validate',
@@ -68,7 +79,7 @@ dash_app.layout = html.Div([
 
                                                                         html.P(),
                                                                         dcc.Dropdown( id = 'view',
-                                                                            options = [{'label' : j,'value': j } for j in list_of_views],#list of views
+                                                                            options = [{'label' : i,'value': i } for i in list_of_views],#list of views
                                                                             placeholder = "Select the view of the echocardiogram",
                                                                             style={'height': '30px', 'width': '800px', 'textAlign' : 'center'}),
 
@@ -81,11 +92,12 @@ dash_app.layout = html.Div([
                                                             
                                                                         html.P(),
                                                                         dcc.Dropdown( id = 'severity',
-                                                                            options = [{'label' : j,'value': j } for j in list_of_severities],#list of severities
+                                                                            options = [{'label' : i,'value': i } for i in list_of_severities],#list of severities
                                                                             placeholder = "Select Severity of RHD",
                                                                             style={'height': '30px', 'width': '800px', 'textAlign' : 'center'}),
                                         html.P(),
-                                        html.P(children = [ html.Div(id = 'prevend'),html.Button('Prev',id = 'prevbutton'),html.Button('Next', id = 'nextbutton'),html.Div(id = 'nextend')],),
+                                        html.P(children = [ html.Div(id = 'prevend'),html.Button('Prev',id = 'prevbutton'),
+                                        html.Button('Next', id = 'nextbutton'),html.Div(id = 'nextend')],),
 
                                         html.P(),
                                         html.Button('Submit', id = 'submit',style = {'color' : 'red'},autoFocus = True),
@@ -99,7 +111,8 @@ dash_app.layout = html.Div([
                                                 columns=[{"name": i, "id": i} for i in df.columns],
                                                 data=df.to_dict('records'),
                                                 export_format="csv",
-                                                page_size=5)
+                                                page_size=5,
+                                                editable=True)
 
                                    
                                                     ])])
@@ -118,6 +131,20 @@ dash_app.layout = html.Div([
 def slide_images(ncp,ncn,ncpts,ncnts,current_image_path):
     nextimage = slideimages(ncp,ncn,ncpts,ncnts,current_image_path,imagenames)
     return nextimage
+
+
+@dash_app.callback(
+    dash.dependencies.Output('imagelen','children'),
+    [dash.dependencies.Input('prevbutton','n_clicks'),
+    dash.dependencies.Input('nextbutton','n_clicks'),],
+    [dash.dependencies.State('prevbutton','n_clicks_timestamp'),
+    dash.dependencies.State('nextbutton','n_clicks_timestamp'),
+    dash.dependencies.State('imagelen','children')]
+    )
+def slide_ann(ncp,ncn,ncpts,ncnts,currentann):
+    nextimage = slideannotation(ncp,ncn,ncpts,ncnts,currentann,annotation)
+    return nextimage
+
 
 
 if __name__ == '__main__':
