@@ -11,10 +11,11 @@ The web Application will be used by experts of echocardiograms to validate our a
 This web app is developed using [Dash](https://dash.plotly.com/) and has been deployed here: [Quality Control Check](https://dash-app-quality.oa.r.appspot.com).
 
   #Steps taken to deploy the app
+  I followed steps outlined in this [blog post](https://www.phillipsj.net/posts/deploying-dash-to-google-app-engine/) by [Jamie Phillips](https://www.phillipsj.net/)
   1. Create a virtual environment and activate it.
   2. Install requirements that are in the requirements.txt file.
-  3. Run py file: main.py
-  4. Create a yaml file.
+  3. Run py file: main.py (The default behaviour of Google App engine is to assume the entrypoint is located in a file called main.py) 
+  4. Create a app.yaml configure it.
   5. Run "gcloud app deploy" on the Google Cloud SDK tool.
 
 
