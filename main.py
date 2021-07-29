@@ -1,16 +1,16 @@
 import dash
-import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
+import dash.dependencies
 import pandas as pd
-#imagelist library.
 from modules.imagelist import imagelist
-#image slider
 from modules.slideimages import slideimages
-# annotation slider
 from modules.slides import slides
+from time import strftime
+import mysql
+from mysql.connector import errorcode
+
+
     
 
 # external CSS stylesheets
@@ -33,6 +33,7 @@ list_of_conditions = ['Mitral Valve Regurgitation','Aortic Valve Regurgitation',
 list_of_severities = ['Normal','Borderline rhd','Definite rhd','Not Applicable']
 
 x = 0 
+y = 0
 
 imagenames = imagelist('./assets/static/images')
 
@@ -41,9 +42,83 @@ df = pd.read_csv('RHD-Data - ValidationSet.csv', encoding='utf-8')
 annotation = []
 
 for index, row in df.iterrows():
-    annotation.append((row['FILENAME'], row['VIEW'], row['COLOUR']))
-    annotation.sort()
+    annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
 
+db_user = "root"
+db_password = "dsail2021"
+db_name = 'rhd_db'
+db_connection_name = "rhd-quality-control:us-west1:rhd-quality-control"
+
+
+
+host = '127.0.0.1'
+conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+
+cursor = conn.cursor()
+
+#connect to database
+def create_connection(conn):
+    try:
+        host = '127.0.0.1:3306'
+        conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your usrname or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(err)
+    else:
+        conn.close()
+        
+#create a table in the rhd_db database and give it a connection
+TABLES = {}
+TABLES['testing2'] = (
+    "CREATE TABLE `testing2`("
+    " `FILENAME` varchar(255) NOT NULL,"
+    " `VIEW` varchar(255) NOT NULL,"
+    " `COLOUR` varchar(255) NOT NULL,"
+    " `VALIDATE` varchar(255) NOT NULL,"
+    " `VIEW_OF_ECHO` varchar(255) NOT NULL,"
+    " `CONDITIONS` varchar(255) NOT NULL,"
+    " `SEVERITY` varchar(255) NOT NULL,"
+    " `TIMETAKEN` varchar(255) NOT NULL"
+    ") ENGINE=InnoDB")
+
+def create_database(cursor):
+    try:
+        cursor.execute(
+            "CREATE DATABASE {} ".format(db_name))
+    except mysql.connector.Error as err:
+        print("Failed creating database: {}".format(err))
+        exit(1)
+try:
+    cursor.execute("USE {}".format(db_name))
+except mysql.connector.Error as err:
+    print("Database does not exist.".format(db_name))
+    if err.errno == errorcode.ER_BAD_DB_ERROR:
+        create_database(cursor)
+        print("Database {} created successfully.".format(db_name))
+        conn.database = db_name
+    else:
+        print(err)
+        exit()
+
+for table_name in TABLES:
+    table_description = TABLES[table_name]
+    try:
+        print("Creating table {}: ".format(table_name), end='')
+        cursor.execute(table_description)
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+            print("already exists.")
+        else:
+            print(err.msg)
+    else:
+        print("OK")
+
+cursor.close()
+conn.close()
 
 dash_app.layout = html.Div([
     html.Div([
@@ -75,10 +150,10 @@ dash_app.layout = html.Div([
                                                                         html.P(),
                                                                         html.Label("CONDITIONS"),
                                                                         dcc.Dropdown(id = 'conditions',
-                                                                        options = [ {'label' : i , 'value' : i} for i in list_of_conditions], #list of conditions
-                                                                        placeholder = "Select the condition or conditions",
-                                                                        #multi = True,
-                                                                        style={'height': '30px', 'width': '800px', 'textAlign' : "middle"}),
+                                                                            options = [ {'label' : i , 'value' : i} for i in list_of_conditions], #list of conditions
+                                                                            placeholder = "Select the condition or conditions",
+                                                                            multi = True,
+                                                                            style={'height': '30px', 'width': '800px', 'textAlign' : "center"}),
                                                             
                                                                         html.P(),
                                                                         html.Label("SEVERITY"),
@@ -93,13 +168,11 @@ dash_app.layout = html.Div([
                                         html.P(),
                                         html.P(children = [ html.Div(id = 'prevend'),html.Button('Prev',id = 'prevbutton'),
                                         html.Button('Next', id = 'nextbutton'),html.Div(id = 'nextend')],),
-                                     
-                                    
-                                    html.Div([dash_table.DataTable(
-                                                id ='table')])
-
-                                                    ])
-                                    ])])
+                                        
+                                        html.Div(id = 'dropdown', children = []),
+                                        
+                                                        ])
+                                        ])])
 ])
 
 #Manage the image slider.
@@ -128,46 +201,74 @@ def slide_ann(pre,nex,prets,nexts,x):
     nextannotation = slides(pre,nex,prets,nexts,x,annotation)
     return nextannotation
 
-
-
-#Update the datatable
+#Update and connect to database
 @dash_app.callback(
-    dash.dependencies.Output('table', 'data'),
-    [dash.dependencies.Input('save', 'n_clicks')],
+    dash.dependencies.Output('dropdown','children'),
     [dash.dependencies.Input('validate', 'value'),
     dash.dependencies.Input('view', 'value'),
     dash.dependencies.Input('conditions', 'value'),
-    dash.dependencies.Input('severity', 'value')],
-    [dash.dependencies.State('nextbutton','n_clicks')],
-    prevent_initial_call = True
+    dash.dependencies.Input('severity', 'value'),
+    dash.dependencies.Input('save', 'n_clicks')],
+    [dash.dependencies.State('save', 'n_clicks_timestamp'),
+    dash.dependencies.State('nextbutton', 'n_clicks')]
 )
-def update_table(n_clicks,validate,view,condition,severity,nex):
-    y = 0
-    df = pd.read_csv('RHD-Data - ValidationSet.csv', encoding='utf-8')
 
+
+def update_output_data(validate,view,conditions,severity,n_clicks,timestamp,nex):
+    y = 0
     if nex == None:
         x = 0
         if n_clicks != None:
-            dff = pd.DataFrame({"FILENAME": annotation[x][y] ,"VIEW": annotation[x][y+1], "COLOUR": annotation[x][y+2], "VALIDATE": validate, "VIEW_OF_ECHO": view, "CONDITIONS": condition, "SEVERITY": severity}, index=[x])
-            
-            dff.to_csv('Data.csv', encoding='utf-8',mode='a', index=False, columns=['FILENAME', 'VIEW', 'COLOUR', 'VALIDATE', 'VIEW_OF_ECHO', 'CONDITIONS','SEVERITY'] )
-        
+            conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+            cursor = conn.cursor()
+            timestamp = strftime("%Y-%m-%d %H:%M:%S")
+            add_annotation = """INSERT INTO testing2 
+            (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,CONDITIONS,SEVERITY,TIMETAKEN)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"""
+
+            values = ((annotation[x][y]), (annotation[x][y+4]), (annotation[x][y+8]), validate, view, str((conditions)), severity, timestamp)
+
+            try:
+                cursor.execute(add_annotation,values)
+                print("Data annotated successfully.")
+                conn.commit()
+            except:
+                conn.rollback()
+
+            cursor.close()
+            conn.close()
 
     elif nex != None:
         if n_clicks == nex + 1:
             x = nex
-            dff = pd.DataFrame({"FILENAME": annotation[x][y] , "VIEW": annotation[x][y+1], "COLOUR": annotation[x][y+2], "VALIDATE": validate, "VIEW_OF_ECHO": view, "CONDITIONS": condition, "SEVERITY": severity}, index=[x])
-            
-            dff.to_csv('Data.csv', encoding='utf-8', mode='a', header=False, index=False, columns=['FILENAME', 'VIEW', 'COLOUR', 'VALIDATE', 'VIEW_OF_ECHO', 'CONDITIONS','SEVERITY'] )
-            
 
+            conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+            cursor = conn.cursor()
+            timestamp = strftime("%Y-%m-%d %H:%M:%S")
+            add_annotation = """INSERT INTO testing2 
+            (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,CONDITIONS,SEVERITY,TIMETAKEN)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"""
+
+            values = ((annotation[x][y]), (annotation[x][y+4]), (annotation[x][y+8]), validate, view, str((conditions)), severity, timestamp)
+
+            try:
+                cursor.execute(add_annotation,values)
+                print("Data annotated successfully.")
+                conn.commit()
+            except:
+                conn.rollback()
+
+            cursor.close()
+            conn.close()
+
+
+    
 
 #Reset Dropdown
 @dash_app.callback(
     dash.dependencies.Output('validate', 'value'),
     [dash.dependencies.Input('nextbutton', 'n_clicks'),
-    dash.dependencies.Input('prevbutton', 'n_clicks')],
-    prevent_initial_call = True
+    dash.dependencies.Input('prevbutton', 'n_clicks')]
 )
 def reset_dropdown(nex,pre):
     if nex != None or pre != None:
@@ -176,8 +277,7 @@ def reset_dropdown(nex,pre):
 @dash_app.callback(
     dash.dependencies.Output('view', 'value'),
     [dash.dependencies.Input('nextbutton', 'n_clicks'),
-    dash.dependencies.Input('prevbutton', 'n_clicks')],
-    prevent_initial_call = True
+    dash.dependencies.Input('prevbutton', 'n_clicks')]
 )
 def reset_dropdown(nex,pre):
     if nex != None or pre != None:
@@ -186,8 +286,7 @@ def reset_dropdown(nex,pre):
 @dash_app.callback(
     dash.dependencies.Output('conditions', 'value'),
     [dash.dependencies.Input('nextbutton', 'n_clicks'),
-    dash.dependencies.Input('prevbutton', 'n_clicks')],
-    prevent_initial_call = True
+    dash.dependencies.Input('prevbutton', 'n_clicks')]
 )
 def reset_dropdown(nex,pre):
     if nex != None or pre != None:
@@ -196,8 +295,7 @@ def reset_dropdown(nex,pre):
 @dash_app.callback(
     dash.dependencies.Output('severity', 'value'),
     [dash.dependencies.Input('nextbutton', 'n_clicks'),
-    dash.dependencies.Input('prevbutton', 'n_clicks')],
-    prevent_initial_call = True
+    dash.dependencies.Input('prevbutton', 'n_clicks')]
 )
 def reset_dropdown(nex,pre):
     if nex != None or pre != None:
@@ -205,4 +303,4 @@ def reset_dropdown(nex,pre):
 
 
 if __name__ == '__main__':
-    dash_app.run_server(debug = True)
+    dash_app.run_server(debug = True )
