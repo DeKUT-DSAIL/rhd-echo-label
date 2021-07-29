@@ -44,23 +44,24 @@ annotation = []
 for index, row in df.iterrows():
     annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
 
-db_user = "root"
-db_password = "dsail2021"
-db_name = 'rhd_db'
-db_connection_name = "rhd-quality-control:us-west1:rhd-quality-control"
+db_user = "CLOUD_SQL_USERNAME"
+db_password = "CLOUD_SQL_PASSWORD"
+db_name = "CLOUD_SQL_DATABASE_NAME"
+db_connection_name = "CLOUD_SQL_CONNECTION_NAME"
+unix_socket = "/cloudsql/{}".format(db_connection_name)
 
 
 
 host = '127.0.0.1'
-conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
 
 cursor = conn.cursor()
 
 #connect to database
 def create_connection(conn):
     try:
-        host = '127.0.0.1:3306'
-        conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+        
+        conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your usrname or password")
@@ -219,7 +220,7 @@ def update_output_data(validate,view,conditions,severity,n_clicks,timestamp,nex)
     if nex == None:
         x = 0
         if n_clicks != None:
-            conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
             cursor = conn.cursor()
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
             add_annotation = """INSERT INTO testing2 
@@ -242,7 +243,7 @@ def update_output_data(validate,view,conditions,severity,n_clicks,timestamp,nex)
         if n_clicks == nex + 1:
             x = nex
 
-            conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
             cursor = conn.cursor()
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
             add_annotation = """INSERT INTO testing2 
