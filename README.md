@@ -8,7 +8,7 @@ As a first step in this project, we will concentrate on the view of the heart as
 The web Application will be used by experts of echocardiograms to validate our annotation.
 
 ## Web Application Deployment
-This web app is developed using [Dash](https://dash.plotly.com/) and has been deployed here: [Quality Control Check](https://rhd-quality-control.uw.r.appspot.com/).
+This web app is developed using [Dash](https://dash.plotly.com/) and has been deployed here: [Quality Control Check](https://rhd-imaging.uw.r.appspot.com/).
 
   #Steps taken to deploy the app
   
