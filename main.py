@@ -1,5 +1,10 @@
 import dash
+import dash_auth
+from dash_bootstrap_components._components.ModalBody import ModalBody
+from dash_bootstrap_components._components.ModalHeader import ModalHeader
+from dash_bootstrap_components._components.PopoverBody import PopoverBody
 import dash_core_components as dcc
+import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash.dependencies
 import pandas as pd
@@ -7,26 +12,40 @@ from modules.imagelist import imagelist
 from modules.slideimages import slideimages
 from modules.slides import slides
 from time import strftime
-import mysql
+#import mysql
+import mysql.connector
 from mysql.connector import errorcode
+from flask import request
 
-
-    
+#Username password pairs
+VALID_USERNAME_PASSWORD_PAIRS = {
+    #create a list of authorized users and their assigned password
+}
 
 # external CSS stylesheets
 external_stylesheets = ["https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css",
                         "https://fonts.googleapis.com/css?family=Raleway:400,400i,700,700i",
                         "https://fonts.googleapis.com/css?family=Product+Sans:400,400i,700,700i"]
 
-dash_app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
+dash_app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP],
+                        meta_tags=[{'name': 'viewport',
+                                    'content': 'width=device-width, initial-scale=1.0'}]
+                    )
 
 app = dash_app.server
 
+auth = dash_auth.BasicAuth(
+    dash_app,
+    VALID_USERNAME_PASSWORD_PAIRS
+)
+
 dash_app.title = "RHD Annotation Quality Control Check"
 
-list_of_validation = ['Correct', 'NOT CORRECT']
+list_of_validation = ['Correct', 'Not Correct']
 
-list_of_views = ['Parasternal long axis (PLAX)','Parasternal short axis(PSAX)','Apical Four Chamber(A4C)','Apical three chamber (A3C)','Apical two chamber(A2C)','Suprasternal(SSN)','Subcostal']
+list_of_views = ['Parasternal long axis (PLAX)','Parasternal short axis(PSAX)','Apical Four Chamber(A4C)','Apical three chamber (A3C)','Apical two chamber(A2C)','Suprasternal(SSN)','Subcostal','Colour Doppler']
+
+list_of_thickness_state = ['Thick', 'Not Thick', 'Not Applicable']
 
 list_of_conditions = ['Mitral Valve Regurgitation','Aortic Valve Regurgitation','Tricuspid Valve Regurgitation','Pulmonary Valve Regurgitation','Aortic Valve Stenosis','Mitral Valve Stenosis','Tricuspid Valve Stenosis','Pulmonary Valve Stenosis','Mitral Valve Prolapse','Not Applicable']
 
@@ -44,24 +63,23 @@ annotation = []
 for index, row in df.iterrows():
     annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
 
-db_user = "CLOUD_SQL_USERNAME"
-db_password = "CLOUD_SQL_PASSWORD"
-db_name = "CLOUD_SQL_DATABASE_NAME"
-db_connection_name = "CLOUD_SQL_CONNECTION_NAME"
-unix_socket = "/cloudsql/{}".format(db_connection_name)
+db_user = "root"
+db_password = "dsail2021"
+db_name = "rhd_db"
+host = '127.0.0.1' #local server
+port= '3306'
+#db_connection_name = "rhd-quality-control:us-west1:rhd-quality-control" #use when hosting on GCP
+#unix_socket = "/cloudsql/{}".format(db_connection_name)
 
-
-
-host = '127.0.0.1'
-conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
+conn = mysql.connector.connect(user=db_user, password=db_password, host=host, port=port, db=db_name) #use this in pace of host when using GCP unix_socket=unix_socket
 
 cursor = conn.cursor()
 
 #connect to database
 def create_connection(conn):
     try:
-        
-        conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
+        host = '127.0.0.1:3306'
+        conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) #use this in pace of host when using GCP unix_socket=unix_socket
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your usrname or password")
@@ -74,15 +92,17 @@ def create_connection(conn):
         
 #create a table in the rhd_db database and give it a connection
 TABLES = {}
-TABLES['testing2'] = (
-    "CREATE TABLE `testing2`("
+TABLES['rhdtest1'] = (
+    "CREATE TABLE `rhdtest1`("
     " `FILENAME` varchar(255) NOT NULL,"
     " `VIEW` varchar(255) NOT NULL,"
     " `COLOUR` varchar(255) NOT NULL,"
     " `VALIDATE` varchar(255) NOT NULL,"
     " `VIEW_OF_ECHO` varchar(255) NOT NULL,"
+    " `THICKNESS_STATE` varchar(255) NOT NULL,"
     " `CONDITIONS` varchar(255) NOT NULL,"
     " `SEVERITY` varchar(255) NOT NULL,"
+    " `USER` varchar(255) NOT NULL,"
     " `TIMETAKEN` varchar(255) NOT NULL"
     ") ENGINE=InnoDB")
 
@@ -126,9 +146,21 @@ dash_app.layout = html.Div([
         html.H1("Quality Control Check"),
         html.Img(src="/assets/favicon.ico"),
     ], className="banner"),
+
+    dbc.Button('Welcome to the App.', id="open", n_clicks=0),
+    dbc.Modal([
+        dbc.ModalHeader('Welcome.'),
+        dbc.ModalBody('You have successfully been authorized.'),
+        dbc.ModalFooter(
+                dbc.Button('Close', id='close')
+        )],
+        id="modal",
+        centered=True,
+        is_open=True,),
+
  html.Div(style = {'textAlign' : 'center'},
                         children = [
-                                    html.Div(html.Img(id = 'image-seen',src = imagenames[x],width = '700px',height = '500px')),
+                                    html.Div(html.Img(id = 'image-seen',src = imagenames[x],width = '500px',height = '400px')),
 
                                         html.P(),
                                         html.Div(children = [html.Div(id='annotation',children='Current annotation of the image')]),
@@ -149,6 +181,13 @@ dash_app.layout = html.Div([
                                                                             style={'height': '30px', 'width': '800px', 'textAlign' : 'center'}),
 
                                                                         html.P(),
+                                                                        html.Label("THICKNESS STATE"),
+                                                                        dcc.Dropdown(id = 'thickness',
+                                                                            options = [ {'label' : i , 'value' : i} for i in list_of_thickness_state], #list of thickness_state
+                                                                            placeholder = "Select the state of thickness",
+                                                                            style={'height': '30px', 'width': '800px', 'textAlign' : "center"}),
+                                                                            
+                                                                        html.P(),
                                                                         html.Label("CONDITIONS"),
                                                                         dcc.Dropdown(id = 'conditions',
                                                                             options = [ {'label' : i , 'value' : i} for i in list_of_conditions], #list of conditions
@@ -163,14 +202,22 @@ dash_app.layout = html.Div([
                                                                             placeholder = "Select Severity of RHD",
                                                                             style={'height': '30px', 'width': '800px', 'textAlign' : 'center'}),
                                         html.P(),
-                                        html.Button('Save', id = 'save', style = {'color' : 'red'},autoFocus = True),
+                                        dbc.Button('Save', id = 'save', color='info'),
                                         html.Div(id = 'thesaved'),
 
+                                        # dbc.Popover(
+                                        #     [dbc.PopoverHeader('Saving to database...'),
+                                        #     dbc.PopoverBody('Successfully saved!')],
+                                        #     id='popover',
+                                        #     is_open=False,
+                                        #     target='save'
+                                        # ),
+
                                         html.P(),
-                                        html.P(children = [ html.Div(id = 'prevend'),html.Button('Prev',id = 'prevbutton'),
-                                        html.Button('Next', id = 'nextbutton'),html.Div(id = 'nextend')],),
+                                        html.P(children = [ html.Div(id = 'prevend'),dbc.Button('Prev',id = 'prevbutton', color='secondary'),
+                                        dbc.Button('Next', id = 'nextbutton', color='secondary'),html.Div(id = 'nextend')]),
                                         
-                                        html.Div(id = 'dropdown', children = []),
+                                        html.Div(id = 'database', children = []),
                                         
                                                         ])
                                         ])])
@@ -204,9 +251,10 @@ def slide_ann(pre,nex,prets,nexts,x):
 
 #Update and connect to database
 @dash_app.callback(
-    dash.dependencies.Output('dropdown','children'),
+    dash.dependencies.Output('database','children'),
     [dash.dependencies.Input('validate', 'value'),
     dash.dependencies.Input('view', 'value'),
+    dash.dependencies.Input('thickness', 'value'),
     dash.dependencies.Input('conditions', 'value'),
     dash.dependencies.Input('severity', 'value'),
     dash.dependencies.Input('save', 'n_clicks')],
@@ -215,26 +263,28 @@ def slide_ann(pre,nex,prets,nexts,x):
 )
 
 
-def update_output_data(validate,view,conditions,severity,n_clicks,timestamp,nex):
+def update_output_data(validate,view,thickness,conditions,severity,n_clicks,timestamp,nex):
+    username = request.authorization['username']
+    #address =  request.remote_addr
+
     y = 0
     if nex == None:
         x = 0
         if n_clicks != None:
-            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
+            conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) #use this in pace of host when using GCP unix_socket=unix_socket
             cursor = conn.cursor()
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
-            add_annotation = """INSERT INTO testing2 
-            (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,CONDITIONS,SEVERITY,TIMETAKEN)
-            VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"""
+            add_annotation = """INSERT INTO rhdtest1 
+            (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,THICKNESS_STATE,CONDITIONS,SEVERITY,USER,TIMETAKEN)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-            values = ((annotation[x][y]), (annotation[x][y+4]), (annotation[x][y+8]), validate, view, str((conditions)), severity, timestamp)
+            values = ((annotation[x][y]), (annotation[x][y+4]), (annotation[x][y+8]), validate, view, thickness, str((conditions)), severity, str((username)), timestamp)
 
-            try:
-                cursor.execute(add_annotation,values)
-                print("Data annotated successfully.")
-                conn.commit()
-            except:
-                conn.rollback()
+            
+            cursor.execute(add_annotation,values)
+            print("Data annotated successfully.")
+            conn.commit()
+            
 
             cursor.close()
             conn.close()
@@ -242,28 +292,51 @@ def update_output_data(validate,view,conditions,severity,n_clicks,timestamp,nex)
     elif nex != None:
         if n_clicks == nex + 1:
             x = nex
-
-            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
+            conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) #use this in pace of host when using GCP unix_socket=unix_socket
             cursor = conn.cursor()
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
-            add_annotation = """INSERT INTO testing2 
-            (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,CONDITIONS,SEVERITY,TIMETAKEN)
-            VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"""
+            add_annotation = """INSERT INTO rhdtest1 
+            (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,THICKNESS_STATE,CONDITIONS,SEVERITY,USER,TIMETAKEN)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-            values = ((annotation[x][y]), (annotation[x][y+4]), (annotation[x][y+8]), validate, view, str((conditions)), severity, timestamp)
+            values = ((annotation[x][y]), (annotation[x][y+4]), (annotation[x][y+8]), validate, view, thickness, str((conditions)), severity, str((username)), timestamp)
 
-            try:
-                cursor.execute(add_annotation,values)
-                print("Data annotated successfully.")
-                conn.commit()
-            except:
-                conn.rollback()
+            
+            cursor.execute(add_annotation,values)
+            print("Data annotated successfully.")
+            conn.commit()
+            
+                
 
             cursor.close()
             conn.close()
 
 
-    
+
+#Trigger popover to show data has been saved successfully to the database
+# @dash_app.callback(
+#     dash.dependencies.Output('popover', 'is_open'),
+#     [dash.dependencies.Input('save', 'n_clicks')],
+#     [dash.dependencies.State('popover', 'is_open')]
+# )
+# def save_popover(n_clicks, is_open):
+#     if n_clicks != None:
+#         return not is_open
+#     return is_open
+
+
+#opening and closing the modal  
+@dash_app.callback(
+    dash.dependencies.Output("modal", "is_open"),
+    [dash.dependencies.Input("open", "n_clicks"), 
+    dash.dependencies.Input("close", "n_clicks")],
+    [dash.dependencies.State("modal", "is_open")],
+)
+def toggle_modal(n1, n2, is_open):
+    if n1 or n2:
+        return not is_open
+    return is_open
+
 
 #Reset Dropdown
 @dash_app.callback(
@@ -275,6 +348,7 @@ def reset_dropdown(nex,pre):
     if nex != None or pre != None:
         return ""
 
+
 @dash_app.callback(
     dash.dependencies.Output('view', 'value'),
     [dash.dependencies.Input('nextbutton', 'n_clicks'),
@@ -284,6 +358,17 @@ def reset_dropdown(nex,pre):
     if nex != None or pre != None:
         return ""
 
+
+@dash_app.callback(
+    dash.dependencies.Output('thickness', 'value'),
+    [dash.dependencies.Input('nextbutton', 'n_clicks'),
+    dash.dependencies.Input('prevbutton', 'n_clicks')]
+)
+def reset_dropdown(nex,pre):
+    if nex != None or pre != None:
+        return ""
+
+
 @dash_app.callback(
     dash.dependencies.Output('conditions', 'value'),
     [dash.dependencies.Input('nextbutton', 'n_clicks'),
@@ -292,6 +377,7 @@ def reset_dropdown(nex,pre):
 def reset_dropdown(nex,pre):
     if nex != None or pre != None:
         return ""
+
 
 @dash_app.callback(
     dash.dependencies.Output('severity', 'value'),
