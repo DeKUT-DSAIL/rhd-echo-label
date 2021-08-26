@@ -1,5 +1,5 @@
 # RHD-Quality_Control_Check_App
-This web application will be used to validate the current annotation we have of the Rheumatic Heart Disease data provided by Dr. Liesl Zuhlke.
+This web application will be used to annotate the Rheumatic Heart Disease data provided by Dr. Liesl Zuhlke.
 
 ## RHD Data
 The data we got originally was in the form of images and videos of echocardiograms. We needed to annotate this data train a model using machine learning algorithms.
