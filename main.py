@@ -160,7 +160,7 @@ dash_app.layout = html.Div([
 
  html.Div(style = {'textAlign' : 'center'},
                         children = [
-                                    html.Div(html.Img(id = 'image-seen',src = imagenames[x],width = '500px',height = '400px')),
+                                    html.Div(html.Iframe(id = 'children',src = imagenames[x],width = '645px',height = '485px')),
 
                                         html.P(),
                                         html.Div(children = [html.Div(id='annotation',children='Current annotation of the image')]),
