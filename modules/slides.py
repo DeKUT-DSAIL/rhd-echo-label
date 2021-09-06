@@ -1,4 +1,3 @@
-#latest working code
 def slides(pre,nex,prets,nexts,x,annotation):
     x = 0
     num_annotation = len(annotation) 
@@ -55,56 +54,4 @@ def slides(pre,nex,prets,nexts,x,annotation):
     
 
 
-           
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# import pandas as pd
-
-# df = pd.read_csv('C:/Users/user/Desktop/Validation-App/RHD-Data - ValidationSet.csv')
-
-# annotation = []
-
-# for index, row in df.iterrows():
-#     annotation.append((row['FILENAME'], row['VIEW'], row['COLOUR']))
-#     annotation.sort()
-
-
-#     def slides(annotation):
-    
-#         x = 0
-#         num_annotation = len(annotation)
-#         state = annotation.index(annotation[x])
-
-#         return 
-
-#     print(slides(annotation))
     
