@@ -1,4 +1,4 @@
-# RHD-Quality_Control_Check_App
+# RHD-imaging-App
 This web application will be used to annotate the Rheumatic Heart Disease data provided by Dr. Liesl Zuhlke.
 
 ## RHD Data
