@@ -1,25 +1,32 @@
 import dash
 import dash_auth
+import pandas as pd
+import mysql.connector
+import dash.dependencies
+import dash_bootstrap_components as dbc
+import dash_html_components as html
+import dash_core_components as dcc
+from flask import request
+from time import strftime
+from modules.slides import slides
+#from dash import html, dcc #use for dash 2.0.0
+from mysql.connector import errorcode
+from modules.imagelist import imagelist
+from modules.clouddata import cloud_data
+from modules.slideimages import slideimages
 from dash_bootstrap_components._components.ModalBody import ModalBody
 from dash_bootstrap_components._components.ModalHeader import ModalHeader
 from dash_bootstrap_components._components.PopoverBody import PopoverBody
-import dash_core_components as dcc
-import dash_bootstrap_components as dbc
-import dash_html_components as html
-import dash.dependencies
-import pandas as pd
-from modules.imagelist import imagelist
-from modules.slideimages import slideimages
-from modules.slides import slides
-from time import strftime
-#import mysql
-import mysql.connector
-from mysql.connector import errorcode
-from flask import request
+#from modules.annotationlist import filelist
 
-#Username password pairs
+
+
+#Username password pairs(Private)
 VALID_USERNAME_PASSWORD_PAIRS = {
-    #create a list of authorized users and their assigned password
+    'Liesl Zuhlke ': 'auth1',
+    'Ciira Maina': 'auth1',
+    'Lorna Mugambi': 'auth1',
+    'Guest': 'auth1'
 }
 
 # external CSS stylesheets
@@ -52,26 +59,34 @@ list_of_conditions = ['Mitral Valve Regurgitation','Aortic Valve Regurgitation',
 list_of_severities = ['Normal','Borderline rhd','Definite rhd','Not Applicable']
 
 x = 0 
-y = 0
 
-imagenames = imagelist('./assets/static/images')
+imagenames = cloud_data("rhd_imaging_data")  #this is the cloud storage bucketname
 
-df = pd.read_csv('RHD-Data - ValidationSet.csv', encoding='utf-8')
+#imagenames = imagelist("./assets/static")
+#annotation = filelist('./assets/static')   
+
+df = pd.read_csv('RHD-Data.csv', encoding='utf-8')
 
 annotation = []
 
 for index, row in df.iterrows():
     annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
 
+#cloud_sql_mysql_create_socket
 db_user = "root"
 db_password = "dsail2021"
 db_name = "rhd_db"
-host = '127.0.0.1' #local server
-port= '3306'
-#db_connection_name = "rhd-quality-control:us-west1:rhd-quality-control" #use when hosting on GCP
-#unix_socket = "/cloudsql/{}".format(db_connection_name)
+#host = '127.0.0.1' #local server
+##port= '3306'
+cloud_sql_connection_name = "rhd-imaging-325212:us-west1:rhd-imaging" #use sql connection name given on GCP when hosting on GCP
+unix_socket = "/cloudsql/{}".format(cloud_sql_connection_name)
 
-conn = mysql.connector.connect(user=db_user, password=db_password, host=host, port=port, db=db_name) #use this in pace of host when using GCP unix_socket=unix_socket
+#unix_socket = "{}/{}".format(
+#     db_socket_dir,
+#     cloud_sql_connection_name
+# )
+
+conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use this in place of host when using GCP unix_socket=unix_socket
 
 cursor = conn.cursor()
 
@@ -79,7 +94,7 @@ cursor = conn.cursor()
 def create_connection(conn):
     try:
         host = '127.0.0.1:3306'
-        conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) #use this in pace of host when using GCP unix_socket=unix_socket
+        conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use this in place of host when using GCP unix_socket=unix_socket
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your usrname or password")
@@ -225,12 +240,12 @@ dash_app.layout = html.Div([
 
 #Manage the image slider.
 @dash_app.callback(
-    dash.dependencies.Output('image-seen','src'),
+    dash.dependencies.Output('children','src'),
     [dash.dependencies.Input('prevbutton','n_clicks'),
     dash.dependencies.Input('nextbutton','n_clicks'),],
     [dash.dependencies.State('prevbutton','n_clicks_timestamp'),
     dash.dependencies.State('nextbutton','n_clicks_timestamp'),
-    dash.dependencies.State('image-seen','src')]
+    dash.dependencies.State('children','src')]
     )
 def slide_images(ncp,ncn,ncpts,ncnts,current_image_path):
     nextimage = slideimages(ncp,ncn,ncpts,ncnts,current_image_path,imagenames)
@@ -271,7 +286,7 @@ def update_output_data(validate,view,thickness,conditions,severity,n_clicks,time
     if nex == None:
         x = 0
         if n_clicks != None:
-            conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) #use this in pace of host when using GCP unix_socket=unix_socket
+            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use this in place of host when using GCP unix_socket=unix_socket
             cursor = conn.cursor()
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
             add_annotation = """INSERT INTO rhdtest1 
@@ -292,7 +307,7 @@ def update_output_data(validate,view,thickness,conditions,severity,n_clicks,time
     elif nex != None:
         if n_clicks == nex + 1:
             x = nex
-            conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) #use this in pace of host when using GCP unix_socket=unix_socket
+            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use this in place of host when using GCP unix_socket=unix_socket
             cursor = conn.cursor()
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
             add_annotation = """INSERT INTO rhdtest1 

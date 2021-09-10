@@ -1,15 +1,14 @@
 runtime: python37
 
+
 env_variables:
-  CLOUD_SQL_USERNAME: root
-  CLOUD_SQL_PASSWORD: dsail2021
-  CLOUD_SQL_DATABASE_NAME: rhd_db
-  CLOUD_SQL_CONNECTION_NAME: rhd-quality-control:us-west1:rhd-quality-control
+  CLOUD_STORAGE_BUCKET: rhd_imaging_data
+  
 
 
-instance_class: B1
-manual_scaling:
-  instances: 1
+instance_class: F4_1G
+
+
 
 
 
