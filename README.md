@@ -7,8 +7,7 @@ The data we got originally was in the form of images and videos of echocardiogra
 As a first step in this project, we will concentrate on the view of the heart as parasternal long axis view(PLAX) or not. We will also concentrate on whether the images and videos of the echocardiograms have colour or not. The idea of having a colour classifier is to help identify leaking heart valves.
 The web Application will be used by experts of echocardiograms to validate our annotation.
 
-![Screenshot (297)](https://user-images.githubusercontent.com/74656615/133056318-1a94fc43-f491-461f-99ca-b4270afbb607.png)
-
+![Screenshot (298)](https://user-images.githubusercontent.com/74656615/133057040-c2cfd21a-7ac7-429d-94ee-edab3845c9c2.png)
 
 ## Web Application Deployment
 This web app is developed using [Dash](https://dash.plotly.com/) and has been deployed here: [RHD imaging Web app](https://rhd-imaging-325212.uw.r.appspot.com/).
