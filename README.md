@@ -10,15 +10,19 @@ The web Application will be used by experts of echocardiograms to validate our a
 ## Web Application Deployment
 This web app is developed using [Dash](https://dash.plotly.com/) and has been deployed here: [RHD imaging Web app](https://rhd-imaging-325212.uw.r.appspot.com/).
 
-  #Steps taken to deploy the app
+  # Steps taken to deploy the app on GCP
   
   I followed steps outlined a [blog post](https://www.phillipsj.net/posts/deploying-dash-to-google-app-engine/) by [Jamie Phillips](https://www.phillipsj.net/)
   
   1. Create a virtual environment and activate it.
-  2. Install requirements that are in the requirements.txt file.
-  3. Run py file: main.py (The default behaviour of Google App engine is to assume the entrypoint is located in a file called main.py) 
+      python -m venv rhd-env
+  3. Install requirements that are in the requirements.txt file.
+      pip install -r requirements.txt
   4. Create a app.yaml configure it.
-  5. Run "gcloud app deploy" on the Google Cloud SDK tool.
+  5. Download and install ]Google Cloud SDK](https://cloud.google.com/sdk/docs/install). From the Google Cloud SDK terminal change into the directory where you have saved your       main.py, requirements.txt and app.yaml files. (The default behaviour of Google App engine is to assume the entrypoint is located in a file called main.py). 
+   Enter y if prompted for a y/n response.
+      gcloud app deploy --promote
+     
 
 
 
