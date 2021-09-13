@@ -15,13 +15,15 @@ This web app is developed using [Dash](https://dash.plotly.com/) and has been de
   I followed steps outlined a [blog post](https://www.phillipsj.net/posts/deploying-dash-to-google-app-engine/) by [Jamie Phillips](https://www.phillipsj.net/)
   
   1. Create a virtual environment and activate it.
-      python -m venv rhd-env
-  3. Install requirements that are in the requirements.txt file.
-      pip install -r requirements.txt
-  4. Create a app.yaml configure it.
-  5. Download and install ]Google Cloud SDK](https://cloud.google.com/sdk/docs/install). From the Google Cloud SDK terminal change into the directory where you have saved your       main.py, requirements.txt and app.yaml files. (The default behaviour of Google App engine is to assume the entrypoint is located in a file called main.py). 
-   Enter y if prompted for a y/n response.
-      gcloud app deploy --promote
+         python -m venv rhd-env
+  2. Install requirements that are in the requirements.txt file.
+         pip install -r requirements.txt
+  3. Create a app.yaml configure it.
+  4. Download and install [Google Cloud SDK](https://cloud.google.com/sdk/docs/install). 
+     From the Google Cloud SDK terminal change into the directory where you have saved your main.py, requirements.txt and app.yaml files. 
+     (The default behaviour of Google App engine is to assume the entrypoint is located in a file called main.py). 
+     Enter y if prompted for a y/n response.
+          gcloud app deploy --promote
      
 
 
