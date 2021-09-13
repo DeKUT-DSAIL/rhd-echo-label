@@ -23,7 +23,10 @@ from dash_bootstrap_components._components.PopoverBody import PopoverBody
 
 #Username password pairs(Private)
 VALID_USERNAME_PASSWORD_PAIRS = {
-    #create username password pairs
+    'Liesl Zuhlke ': 'auth1',
+    'Ciira Maina': 'auth1',
+    'Lorna Mugambi': 'auth1',
+    'Guest': 'auth1'
 }
 
 # external CSS stylesheets
@@ -47,7 +50,7 @@ dash_app.title = "RHD Annotation Quality Control Check"
 
 list_of_validation = ['Correct', 'Not Correct']
 
-list_of_views = ['Parasternal long axis (PLAX)','Parasternal short axis(PSAX)','Apical Four Chamber(A4C)','Apical three chamber (A3C)','Apical two chamber(A2C)','Suprasternal(SSN)','Subcostal','Colour Doppler']
+list_of_views = ['Parasternal long axis (PLAX)','Parasternal short axis(PSAX)','Apical Four Chamber(A4C)','Apical three chamber (A3C)','Apical two chamber(A2C)','Suprasternal(SSN)','Subcostal','Doppler']
 
 list_of_thickness_state = ['Thick', 'Not Thick', 'Not Applicable']
 
@@ -73,8 +76,8 @@ for index, row in df.iterrows():
 db_user = "root"
 db_password = "dsail2021"
 db_name = "rhd_db"
-#host = '127.0.0.1' #local server
-##port= '3306'
+host = '127.0.0.1' #local server
+port= '3306'
 cloud_sql_connection_name = "rhd-imaging-325212:us-west1:rhd-imaging" #use sql connection name given on GCP when hosting on GCP
 unix_socket = "/cloudsql/{}".format(cloud_sql_connection_name)
 
@@ -83,7 +86,7 @@ unix_socket = "/cloudsql/{}".format(cloud_sql_connection_name)
 #     cloud_sql_connection_name
 # )
 
-conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use this in place of host when using GCP unix_socket=unix_socket
+conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) 
 
 cursor = conn.cursor()
 
@@ -91,7 +94,7 @@ cursor = conn.cursor()
 def create_connection(conn):
     try:
         host = '127.0.0.1:3306'
-        conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use this in place of host when using GCP unix_socket=unix_socket
+        conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your usrname or password")
@@ -217,13 +220,14 @@ dash_app.layout = html.Div([
                                         dbc.Button('Save', id = 'save', color='info'),
                                         html.Div(id = 'thesaved'),
 
-                                        # dbc.Popover(
-                                        #     [dbc.PopoverHeader('Saving to database...'),
-                                        #     dbc.PopoverBody('Successfully saved!')],
-                                        #     id='popover',
-                                        #     is_open=False,
-                                        #     target='save'
-                                        # ),
+                                        dbc.Popover(
+                                            [dbc.PopoverHeader('Saving to database...'),
+                                            dbc.PopoverBody('Successfully saved!')],
+                                            id='popover',
+                                            trigger='legacy',
+                                            is_open=False,
+                                            target='save'
+                                        ),
 
                                         html.P(),
                                         html.P(children = [ html.Div(id = 'prevend'),dbc.Button('Prev',id = 'prevbutton', color='secondary'),
@@ -261,7 +265,7 @@ def slide_ann(pre,nex,prets,nexts,x):
     nextannotation = slides(pre,nex,prets,nexts,x,annotation)
     return nextannotation
 
-#Update and connect to database
+#Update and connect to mysql database
 @dash_app.callback(
     dash.dependencies.Output('database','children'),
     [dash.dependencies.Input('validate', 'value'),
@@ -283,7 +287,7 @@ def update_output_data(validate,view,thickness,conditions,severity,n_clicks,time
     if nex == None:
         x = 0
         if n_clicks != None:
-            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use this in place of host when using GCP unix_socket=unix_socket
+            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
             cursor = conn.cursor()
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
             add_annotation = """INSERT INTO rhdtest1 
@@ -304,7 +308,7 @@ def update_output_data(validate,view,thickness,conditions,severity,n_clicks,time
     elif nex != None:
         if n_clicks == nex + 1:
             x = nex
-            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use this in place of host when using GCP unix_socket=unix_socket
+            conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) 
             cursor = conn.cursor()
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
             add_annotation = """INSERT INTO rhdtest1 
@@ -326,15 +330,15 @@ def update_output_data(validate,view,thickness,conditions,severity,n_clicks,time
 
 
 #Trigger popover to show data has been saved successfully to the database
-# @dash_app.callback(
-#     dash.dependencies.Output('popover', 'is_open'),
-#     [dash.dependencies.Input('save', 'n_clicks')],
-#     [dash.dependencies.State('popover', 'is_open')]
-# )
-# def save_popover(n_clicks, is_open):
-#     if n_clicks != None:
-#         return not is_open
-#     return is_open
+@dash_app.callback(
+    dash.dependencies.Output('popover', 'is_open'),
+    [dash.dependencies.Input('save', 'n_clicks')],
+    [dash.dependencies.State('popover', 'is_open')]
+)
+def save_popover(n_clicks, is_open):
+    if n_clicks != None:
+        return not is_open
+    return is_open
 
 
 #opening and closing the modal  
@@ -350,7 +354,7 @@ def toggle_modal(n1, n2, is_open):
     return is_open
 
 
-#Reset Dropdown
+#Reset Dropdowns
 @dash_app.callback(
     dash.dependencies.Output('validate', 'value'),
     [dash.dependencies.Input('nextbutton', 'n_clicks'),
