@@ -23,10 +23,7 @@ from dash_bootstrap_components._components.PopoverBody import PopoverBody
 
 #Username password pairs(Private)
 VALID_USERNAME_PASSWORD_PAIRS = {
-    'Liesl Zuhlke ': 'auth1',
-    'Ciira Maina': 'auth1',
-    'Lorna Mugambi': 'auth1',
-    'Guest': 'auth1'
+    #list username password pairs here
 }
 
 # external CSS stylesheets
@@ -86,7 +83,7 @@ unix_socket = "/cloudsql/{}".format(cloud_sql_connection_name)
 #     cloud_sql_connection_name
 # )
 
-conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) 
+conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use host=host inplace of unix socket when using a local mysql server
 
 cursor = conn.cursor()
 
