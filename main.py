@@ -1,6 +1,7 @@
 import dash
 import dash_auth
 import pandas as pd
+import pymysql
 import mysql.connector
 import dash.dependencies
 import dash_bootstrap_components as dbc
@@ -17,14 +18,9 @@ from modules.slideimages import slideimages
 from dash_bootstrap_components._components.ModalBody import ModalBody
 from dash_bootstrap_components._components.ModalHeader import ModalHeader
 from dash_bootstrap_components._components.PopoverBody import PopoverBody
-#from modules.annotationlist import filelist
+from users import VALID_USERNAME_PASSWORD_PAIRS 
 
 
-
-#Username password pairs(Private)
-VALID_USERNAME_PASSWORD_PAIRS = {
-    #list username password pairs here
-}
 
 # external CSS stylesheets
 external_stylesheets = ["https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css",
@@ -55,20 +51,6 @@ list_of_conditions = ['Mitral Valve Regurgitation','Aortic Valve Regurgitation',
 
 list_of_severities = ['Normal','Borderline rhd','Definite rhd','Not Applicable']
 
-x = 0 
-
-imagenames = cloud_data("rhd_imaging_data")  #this is the cloud storage bucketname
-
-#imagenames = imagelist("./assets/static")
-#annotation = filelist('./assets/static')   
-
-df = pd.read_csv('RHD-Data.csv', encoding='utf-8')
-
-annotation = []
-
-for index, row in df.iterrows():
-    annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
-
 #cloud_sql_mysql_create_socket
 db_user = "root"
 db_password = "dsail2021"
@@ -78,10 +60,6 @@ port= '3306'
 cloud_sql_connection_name = "rhd-imaging-325212:us-west1:rhd-imaging" #use sql connection name given on GCP when hosting on GCP
 unix_socket = "/cloudsql/{}".format(cloud_sql_connection_name)
 
-#unix_socket = "{}/{}".format(
-#     db_socket_dir,
-#     cloud_sql_connection_name
-# )
 
 conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use host=host inplace of unix socket when using a local mysql server
 
@@ -153,6 +131,41 @@ for table_name in TABLES:
 cursor.close()
 conn.close()
 
+
+x = 0 
+
+imagenames = cloud_data("rhd_imaging_data")  #this is the cloud storage bucketname
+
+#imagenames = imagelist("./assets/static")
+#annotation = filelist('./assets/static')   
+
+df = pd.read_csv('RHD-Data.csv', encoding='utf-8')
+
+annotation = []
+
+for index, row in df.iterrows():
+    annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
+
+#Read the database to get list of images not labelled on the webApp
+conn1 = pymysql.connect(user=db_user, password=db_password, host=host, db=db_name)
+df_db = pd.read_sql_query("SELECT * FROM rhdtest1 ",conn1)
+
+database = []
+
+for index, row in df_db.iterrows():
+    database.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
+
+    
+final = sorted(list(set(annotation) - set(database)))
+print(final)
+
+df2 = pd.DataFrame(final)
+path = df2.iloc[:, 0]
+for item in path:
+    final_path = "./assets/static/" + path
+    final_imagelist = list(final_path)
+
+
 dash_app.layout = html.Div([
     html.Div([
         html.H1("Quality Control Check"),
@@ -172,11 +185,11 @@ dash_app.layout = html.Div([
 
  html.Div(style = {'textAlign' : 'center'},
                         children = [
-                                    html.Div(html.Iframe(id = 'children',src = imagenames[x],width = '645px',height = '485px')),
+                                    html.Div(html.Iframe(id = 'children',src = final_imagelist[x],width = '645px',height = '485px')),
 
                                         html.P(),
                                         html.Div(children = [html.Div(id='annotation',children='Current annotation of the image')]),
-                                        html.Div(id = 'imagelen', children = annotation[x]),
+                                        html.Div(id = 'imagelen', children = final[x]),
                                         html.P(),
                                         html.Div(style = {'display': 'flex','align-items':'center','justify-content':'center'},
                                         children = [html.P(children = [html.Label("VALIDATE"),
@@ -246,7 +259,7 @@ dash_app.layout = html.Div([
     dash.dependencies.State('children','src')]
     )
 def slide_images(ncp,ncn,ncpts,ncnts,current_image_path):
-    nextimage = slideimages(ncp,ncn,ncpts,ncnts,current_image_path,imagenames)
+    nextimage = slideimages(ncp,ncn,ncpts,ncnts,current_image_path,final_imagelist)
     return nextimage
 
 #Manage the annotation slider
@@ -258,8 +271,8 @@ def slide_images(ncp,ncn,ncpts,ncnts,current_image_path):
    dash.dependencies.State('nextbutton','n_clicks_timestamp'),
     dash.dependencies.State('imagelen','children')]
     )
-def slide_ann(pre,nex,prets,nexts,x):
-    nextannotation = slides(pre,nex,prets,nexts,x,annotation)
+def slide_ann(pre,nex,prets,nexts,current_annotation):
+    nextannotation = slides(pre,nex,prets,nexts,current_annotation,final)
     return nextannotation
 
 #Update and connect to mysql database
