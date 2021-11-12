@@ -13,12 +13,12 @@ from modules.slides import slides
 #from dash import html, dcc #use for dash 2.0.0
 from mysql.connector import errorcode
 from modules.imagelist import imagelist
-from modules.clouddata import cloud_data
+#from modules.clouddata import cloud_data #Use if your images are saved in a cloud bucket
 from modules.slideimages import slideimages
 from dash_bootstrap_components._components.ModalBody import ModalBody
 from dash_bootstrap_components._components.ModalHeader import ModalHeader
 from dash_bootstrap_components._components.PopoverBody import PopoverBody
-from users import VALID_USERNAME_PASSWORD_PAIRS 
+from users import VALID_USERNAME_PASSWORD_PAIRS
 
 
 
@@ -38,6 +38,7 @@ auth = dash_auth.BasicAuth(
     dash_app,
     VALID_USERNAME_PASSWORD_PAIRS
 )
+
 
 dash_app.title = "RHD Annotation Quality Control Check"
 
@@ -61,7 +62,7 @@ cloud_sql_connection_name = "rhd-imaging-325212:us-west1:rhd-imaging" #use sql c
 unix_socket = "/cloudsql/{}".format(cloud_sql_connection_name)
 
 
-conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #use host=host inplace of unix socket when using a local mysql server
+conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) #unix_socket=unix_socket
 
 cursor = conn.cursor()
 
@@ -69,7 +70,7 @@ cursor = conn.cursor()
 def create_connection(conn):
     try:
         host = '127.0.0.1:3306'
-        conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) 
+        conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your usrname or password")
@@ -133,43 +134,43 @@ conn.close()
 
 
 x = 0 
+#imagenames = cloud_data("rhd_imaging_data")  #this is the cloud storage bucketname
 
-imagenames = cloud_data("rhd_imaging_data")  #this is the cloud storage bucketname
-
-#imagenames = imagelist("./assets/static")
-#annotation = filelist('./assets/static')   
-
-df = pd.read_csv('RHD-Data.csv', encoding='utf-8')
-
-annotation = []
-
-for index, row in df.iterrows():
-    annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
 
 #Read the database to get list of images not labelled on the webApp
-conn1 = pymysql.connect(user=db_user, password=db_password, host=host, db=db_name)
-df_db = pd.read_sql_query("SELECT * FROM rhdtest1 ",conn1)
+conn =mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+cursor = conn.cursor()
+df = pd.read_csv('sample.csv', encoding='utf-8')
+annotation = []
+for index, row in df.iterrows():
+    annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))   
+    annotation.sort()
 
+df_db = pd.read_sql_query("SELECT * FROM rhdtest1 ",conn)
 database = []
-
+database_paths = []
 for index, row in df_db.iterrows():
     database.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
+    database.sort()
+    database_paths.append(('assets/' + row['FILENAME']))
+    database_paths.sort()
 
-    
-final = sorted(list(set(annotation) - set(database)))
-print(final)
 
-df2 = pd.DataFrame(final)
-path = df2.iloc[:, 0]
-for item in path:
-    final_path = "./assets/static/" + path
-    final_imagelist = list(final_path)
+final_annotationlist = sorted(list(set(annotation) - set(database)))
+print(final_annotationlist)
 
+
+images = imagelist("./assets/")
+final_imagelist = sorted(list((set(images) - set(database_paths))))
+print(final_imagelist)
+
+cursor.close()
+conn.close()
 
 dash_app.layout = html.Div([
     html.Div([
-        html.H1("Quality Control Check"),
-        html.Img(src="/assets/favicon.ico"),
+        html.H1("Echo labelling App"),
+        html.Img(src="/assets/template/favicon.ico"),
     ], className="banner"),
 
     dbc.Button('Welcome to the App.', id="open", n_clicks=0),
@@ -183,13 +184,14 @@ dash_app.layout = html.Div([
         centered=True,
         is_open=True,),
 
+
  html.Div(style = {'textAlign' : 'center'},
                         children = [
                                     html.Div(html.Iframe(id = 'children',src = final_imagelist[x],width = '645px',height = '485px')),
 
                                         html.P(),
                                         html.Div(children = [html.Div(id='annotation',children='Current annotation of the image')]),
-                                        html.Div(id = 'imagelen', children = final[x]),
+                                        html.Div(id = 'imagelen', children = final_annotationlist[x]),
                                         html.P(),
                                         html.Div(style = {'display': 'flex','align-items':'center','justify-content':'center'},
                                         children = [html.P(children = [html.Label("VALIDATE"),
@@ -241,7 +243,7 @@ dash_app.layout = html.Div([
 
                                         html.P(),
                                         html.P(children = [ html.Div(id = 'prevend'),dbc.Button('Prev',id = 'prevbutton', color='secondary'),
-                                        dbc.Button('Next', id = 'nextbutton', color='secondary'),html.Div(id = 'nextend')]),
+                                        dbc.Button('Next', id = 'nextbutton', color='secondary'), html.Div(id = 'nextend')]),
                                         
                                         html.Div(id = 'database', children = []),
                                         
@@ -258,8 +260,9 @@ dash_app.layout = html.Div([
     dash.dependencies.State('nextbutton','n_clicks_timestamp'),
     dash.dependencies.State('children','src')]
     )
-def slide_images(ncp,ncn,ncpts,ncnts,current_image_path):
-    nextimage = slideimages(ncp,ncn,ncpts,ncnts,current_image_path,final_imagelist)
+def slide_images(ncp,ncn,ncpts,ncnts,x):
+    
+    nextimage = slideimages(ncp,ncn,ncpts,ncnts,x,final_imagelist)
     return nextimage
 
 #Manage the annotation slider
@@ -271,9 +274,12 @@ def slide_images(ncp,ncn,ncpts,ncnts,current_image_path):
    dash.dependencies.State('nextbutton','n_clicks_timestamp'),
     dash.dependencies.State('imagelen','children')]
     )
-def slide_ann(pre,nex,prets,nexts,current_annotation):
-    nextannotation = slides(pre,nex,prets,nexts,current_annotation,final)
+
+def slide_ann(prev,next,prets,nexts,x):
+    nextannotation = slides(prev,next,prets,nexts,x,final_annotationlist)
     return nextannotation
+
+
 
 #Update and connect to mysql database
 @dash_app.callback(
@@ -289,54 +295,82 @@ def slide_ann(pre,nex,prets,nexts,current_annotation):
 )
 
 
+
 def update_output_data(validate,view,thickness,conditions,severity,n_clicks,timestamp,nex):
     username = request.authorization['username']
     #address =  request.remote_addr
 
     y = 0
+    x = 0
     if nex == None:
-        x = 0
         if n_clicks != None:
             conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
             cursor = conn.cursor()
+
+            df = pd.read_csv('sample.csv', encoding='utf-8')
+            annotation = []
+            for index, row in df.iterrows():
+                annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))   
+                annotation.sort()
+
+            df_db = pd.read_sql_query("SELECT * FROM rhdtest1 ",conn)
+            database = []
+            for index, row in df_db.iterrows():
+                database.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
+                database.sort()
+
+            final_annotationlist = sorted(list(set(annotation) - set(database)))
+            print(final_annotationlist)
+
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
             add_annotation = """INSERT INTO rhdtest1 
             (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,THICKNESS_STATE,CONDITIONS,SEVERITY,USER,TIMETAKEN)
             VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-            values = ((annotation[x][y]), (annotation[x][y+4]), (annotation[x][y+8]), validate, view, thickness, str((conditions)), severity, str((username)), timestamp)
+            values = ((final_annotationlist[x][y]), (final_annotationlist[x][y+4]), (final_annotationlist[x][y+8]), validate, view, thickness, str((conditions)), severity, str((username)), timestamp)
 
             
             cursor.execute(add_annotation,values)
             print("Data annotated successfully.")
             conn.commit()
-            
-
+        
             cursor.close()
             conn.close()
 
     elif nex != None:
         if n_clicks == nex + 1:
-            x = nex
             conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) 
             cursor = conn.cursor()
+
+            df = pd.read_csv('sample.csv', encoding='utf-8')
+            annotation = []
+            for index, row in df.iterrows():
+                annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))   
+                annotation.sort()
+
+            df_db = pd.read_sql_query("SELECT * FROM rhdtest1 ",conn)
+            database = []
+            for index, row in df_db.iterrows():
+                database.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
+                database.sort()
+
+            final_annotationlist = sorted(list(set(annotation) - set(database)))
+            print(final_annotationlist)
+
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
             add_annotation = """INSERT INTO rhdtest1 
             (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,THICKNESS_STATE,CONDITIONS,SEVERITY,USER,TIMETAKEN)
             VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-            values = ((annotation[x][y]), (annotation[x][y+4]), (annotation[x][y+8]), validate, view, thickness, str((conditions)), severity, str((username)), timestamp)
+            values = ((final_annotationlist[x][y]), (final_annotationlist[x][y+4]), (final_annotationlist[x][y+8]), validate, view, thickness, str((conditions)), severity, str((username)), timestamp)
 
-            
+                
             cursor.execute(add_annotation,values)
             print("Data annotated successfully.")
             conn.commit()
-            
-                
 
             cursor.close()
             conn.close()
-
 
 
 #Trigger popover to show data has been saved successfully to the database
