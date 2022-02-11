@@ -1,74 +1,42 @@
 FILENAME,VIEW,COLOUR,VALIDATION,VIEW-APP,THICKNESS,CONDITION,SEVERITY,USER,TIMESTAMP
-10.33.21 hrs __[0005899].mp4,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/21/2021 7:07
-10.33.21 hrs __[0005899].mp4,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/23/2021 9:22
-10.33.21 hrs __[0005899].mp4,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:14
-10.33.51 hrs __[0005900].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/21/2021 7:08
-10.33.51 hrs __[0005900].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/23/2021 9:22
-10.33.51 hrs __[0005900].jpeg,PLAX,NO COLOUR,Not Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 19:33
-10.33.51 hrs __[0005900].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:15
-10.35.17 hrs __[0005901].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/21/2021 7:08
-10.35.17 hrs __[0005901].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/23/2021 9:22
-10.35.17 hrs __[0005901].jpeg,PLAX,NO COLOUR,Not Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 19:34
-10.35.17 hrs __[0005901].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:15
-10.37.20 hrs __[0005902].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/21/2021 7:09
-10.37.20 hrs __[0005902].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/23/2021 9:23
-10.37.20 hrs __[0005902].jpeg,PLAX,NO COLOUR,Not Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 19:35
-10.37.20 hrs __[0005902].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:16
-10.38.47 hrs __[0005903].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Thick,['Not Applicable'],Not Applicable,Guest,9/21/2021 7:09
-10.38.47 hrs __[0005903].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Thick,['Not Applicable'],Not Applicable,Guest,9/23/2021 9:23
-10.38.47 hrs __[0005903].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Thick,['Not Applicable'],Definite rhd,Liesl Zuhlke,9/23/2021 19:38
-10.38.47 hrs __[0005903].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Thick,['Not Applicable'],Definite rhd,Liesl Zuhlke,9/23/2021 20:17
-10.39.07 hrs __[0005904].mp4,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/21/2021 7:13
-10.39.07 hrs __[0005904].mp4,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/23/2021 9:23
-10.39.07 hrs __[0005904].mp4,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Normal,Liesl Zuhlke,9/23/2021 19:39
-10.39.07 hrs __[0005904].mp4,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:17
-10.39.22 hrs __[0005905].mp4,PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Normal,Guest,9/21/2021 7:17
-10.39.22 hrs __[0005905].mp4,PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/23/2021 9:24
-10.39.22 hrs __[0005905].mp4,PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Thick,['Aortic Valve Regurgitation'],Borderline rhd,Liesl Zuhlke,9/23/2021 19:46
-10.39.22 hrs __[0005905].mp4,PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Aortic Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/23/2021 20:18
-10.40.10 hrs __[0005906].jpeg,PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Mitral Valve Regurgitation'],Normal,Guest,9/23/2021 9:28
-10.40.10 hrs __[0005906].jpeg,PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Mitral Valve Regurgitation'],Normal,Liesl Zuhlke,9/23/2021 19:49
-10.40.10 hrs __[0005906].jpeg,PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Mitral Valve Regurgitation'],Normal,Liesl Zuhlke,9/23/2021 20:19
-10.40.15 hrs __[0005907].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/23/2021 9:29
-10.40.15 hrs __[0005907].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Mitral Valve Prolapse'],Not Applicable,Liesl Zuhlke,9/23/2021 19:52
-10.40.15 hrs __[0005907].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Mitral Valve Prolapse'],Not Applicable,Liesl Zuhlke,9/23/2021 20:20
-10.40.31 hrs __[0005908].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Guest,9/23/2021 9:29
-10.40.31 hrs __[0005908].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 19:56
-10.40.31 hrs __[0005908].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:20
-10.40.50 hrs __[0005909].mp4,NOT PLAX,COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 19:56
-10.40.50 hrs __[0005909].mp4,NOT PLAX,COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:21
-10.40.57 hrs __[0005910].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 19:57
-10.40.57 hrs __[0005910].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:22
-10.41.08 hrs __[0005911].mp4,NOT PLAX,COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 19:58
-10.41.08 hrs __[0005911].mp4,NOT PLAX,COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,"['Aortic Valve Regurgitation', 'Pulmonary Valve Regurgitation']",Not Applicable,Liesl Zuhlke,9/23/2021 20:22
-10.41.25 hrs __[0005912].mp4,NOT PLAX,COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Tricuspid Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/23/2021 20:23
-10.41.54 hrs __[0005913].jpeg,PLAX,COLOUR,Not Correct,Doppler,Not Applicable,['Tricuspid Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/23/2021 20:23
-10.42.06 hrs __[0005914].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:24
-10.42.17 hrs __[0005915].mp4,NOT PLAX,COLOUR,Correct,Parasternal short axis(PSAX),,['Pulmonary Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/23/2021 20:25
-10.42.42 hrs __[0005916].jpeg,CAN'T TELL,NO COLOUR,Not Correct,Parasternal short axis(PSAX),Not Applicable,['Pulmonary Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/23/2021 20:26
-10.43.03 hrs __[0005917].mp4,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/23/2021 20:27
-10.44.47 hrs __[0005918].jpeg,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Thick,['Not Applicable'],Definite rhd,Liesl Zuhlke,9/23/2021 20:27
-10.45.07 hrs __[0005919].mp4,NOT PLAX,COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Mitral Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/24/2021 3:51
-10.45.20 hrs __[0005920].jpeg,NOT PLAX,COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Mitral Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/24/2021 3:52
-10.46.03 hrs __[0005921].jpeg,NOT PLAX,COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Mitral Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/24/2021 3:52
-10.47.26 hrs __[0005922].jpeg,NOT PLAX,COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Tricuspid Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/24/2021 3:53
-10.47.58 hrs __[0005923].jpeg,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 3:55
-10.48.44 hrs __[0005924].jpeg,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 3:56
-10.49.43 hrs __[0005925].jpeg,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 3:56
-10.49.58 hrs __[0005926].jpeg,NOT PLAX,NO COLOUR,Correct,Doppler,Not Applicable,['Tricuspid Valve Regurgitation'],Not Applicable,Liesl Zuhlke,9/24/2021 4:01
-10.50.15 hrs __[0005927].mp4,NOT PLAX,COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:02
-10.50.45 hrs __[0005928].jpeg,NOT PLAX,NO COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:02
-10.50.50 hrs __[0005929].mp4,NOT PLAX,NO COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:03
-10.51.20 hrs __[0005930].mp4,CAN'T TELL,NO COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:03
-10.51.54 hrs __[0005931].mp4,CAN'T TELL,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:04
-10.52.13 hrs __[0005932].jpeg,CAN'T TELL,NO COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:04
-11.14.13 hrs __[0009557].jpeg,PLAX,NO COLOUR,Correct,,,,,Liesl Zuhlke,9/24/2021 4:06
-11.14.59 hrs __[0009558].jpeg,PLAX,NO COLOUR,Correct,Subcostal,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:07
-11.15.38 hrs __[0009559].jpeg,PLAX,NO COLOUR,Correct,Subcostal,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:07
-11.15.54 hrs __[0009560].jpeg,PLAX,NO COLOUR,Not Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:42
-11.16.07 hrs __[0009561].mp4,PLAX,COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:43
-11.16.14 hrs __[0009562].mp4,PLAX,COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:44
-11.16.24 hrs __[0009563].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Thick,['Not Applicable'],Definite rhd,Liesl Zuhlke,9/24/2021 4:44
-11.16.45 hrs __[0009564].mp4,NOT PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Thick,['Not Applicable'],Borderline rhd,Liesl Zuhlke,9/24/2021 4:46
-11.17.42 hrs __[0009565].jpeg,NOT PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,9/24/2021 4:46
-11.17.50 hrs __[0009566].mp4,NOT PLAX,NO COLOUR,,,,,,Liesl Zuhlke,9/24/2021 4:47
+10.33.21 hrs __[0005899].mp4,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 20:14
+10.33.51 hrs __[0005900].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 20:15
+10.35.17 hrs __[0005901].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 20:15
+10.37.20 hrs __[0005902].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 20:16
+10.38.47 hrs __[0005903].jpeg,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Thick,['Not Applicable'],Definite rhd,Liesl Zuhlke,23/09/3921 20:17
+10.39.07 hrs __[0005904].mp4,PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 20:17
+10.39.22 hrs __[0005905].mp4,PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Normal,Guest,21/09/3921 07:17
+10.40.10 hrs __[0005906].jpeg,PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Mitral Valve Regurgitation'],Normal,Liesl Zuhlke,23/09/3921 20:19
+10.40.15 hrs __[0005907].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Mitral Valve Prolapse'],Not Applicable,Liesl Zuhlke,23/09/3921 20:20
+10.40.31 hrs __[0005908].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 19:56
+10.40.50 hrs __[0005909].mp4,NOT PLAX,COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 19:56
+10.40.57 hrs __[0005910].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 19:57
+10.41.08 hrs __[0005911].mp4,NOT PLAX,COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,"['Aortic Valve Regurgitation', 'Pulmonary Valve Regurgitation']",Not Applicable,Liesl Zuhlke,23/09/3921 20:22
+10.41.25 hrs __[0005912].mp4,NOT PLAX,COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Tricuspid Valve Regurgitation'],Not Applicable,Liesl Zuhlke,23/09/3921 20:23
+10.41.54 hrs __[0005913].jpeg,PLAX,COLOUR,Not Correct,Doppler,Not Applicable,['Tricuspid Valve Regurgitation'],Not Applicable,Liesl Zuhlke,23/09/3921 20:23
+10.42.06 hrs __[0005914].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal short axis(PSAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 20:24
+10.42.42 hrs __[0005916].jpeg,CAN'T TELL,NO COLOUR,Not Correct,Parasternal short axis(PSAX),Not Applicable,['Pulmonary Valve Regurgitation'],Not Applicable,Liesl Zuhlke,23/09/3921 20:26
+10.43.03 hrs __[0005917].mp4,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,23/09/3921 20:27
+10.44.47 hrs __[0005918].jpeg,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Thick,['Not Applicable'],Definite rhd,Liesl Zuhlke,23/09/3921 20:27
+10.45.07 hrs __[0005919].mp4,NOT PLAX,COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Mitral Valve Regurgitation'],Not Applicable,Liesl Zuhlke,24/09/3921 03:51
+10.45.20 hrs __[0005920].jpeg,NOT PLAX,COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Mitral Valve Regurgitation'],Not Applicable,Liesl Zuhlke,24/09/3921 03:52
+10.46.03 hrs __[0005921].jpeg,NOT PLAX,COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Mitral Valve Regurgitation'],Not Applicable,Liesl Zuhlke,24/09/3921 03:52
+10.47.26 hrs __[0005922].jpeg,NOT PLAX,COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Tricuspid Valve Regurgitation'],Not Applicable,Liesl Zuhlke,24/09/3921 03:53
+10.47.58 hrs __[0005923].jpeg,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 03:55
+10.48.44 hrs __[0005924].jpeg,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 03:56
+10.49.43 hrs __[0005925].jpeg,NOT PLAX,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 03:56
+10.49.58 hrs __[0005926].jpeg,NOT PLAX,NO COLOUR,Correct,Doppler,Not Applicable,['Tricuspid Valve Regurgitation'],Not Applicable,Liesl Zuhlke,24/09/3921 04:01
+10.50.15 hrs __[0005927].mp4,NOT PLAX,COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:02
+10.50.45 hrs __[0005928].jpeg,NOT PLAX,NO COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:02
+10.50.50 hrs __[0005929].mp4,NOT PLAX,NO COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:03
+10.51.20 hrs __[0005930].mp4,CAN'T TELL,NO COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:03
+10.51.54 hrs __[0005931].mp4,CAN'T TELL,NO COLOUR,Correct,Apical Four Chamber(A4C),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:04
+10.52.13 hrs __[0005932].jpeg,CAN'T TELL,NO COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:04
+11.14.59 hrs __[0009558].jpeg,PLAX,NO COLOUR,Correct,Subcostal,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:07
+11.15.38 hrs __[0009559].jpeg,PLAX,NO COLOUR,Correct,Subcostal,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:07
+11.15.54 hrs __[0009560].jpeg,PLAX,NO COLOUR,Not Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:42
+11.16.07 hrs __[0009561].mp4,PLAX,COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:43
+11.16.14 hrs __[0009562].mp4,PLAX,COLOUR,Correct,Doppler,Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:44
+11.16.24 hrs __[0009563].mp4,NOT PLAX,NO COLOUR,Correct,Parasternal long axis (PLAX),Thick,['Not Applicable'],Definite rhd,Liesl Zuhlke,24/09/3921 04:44
+11.16.45 hrs __[0009564].mp4,NOT PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Thick,['Not Applicable'],Borderline rhd,Liesl Zuhlke,24/09/3921 04:46
+11.17.42 hrs __[0009565].jpeg,NOT PLAX,COLOUR,Correct,Parasternal long axis (PLAX),Not Applicable,['Not Applicable'],Not Applicable,Liesl Zuhlke,24/09/3921 04:46

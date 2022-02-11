@@ -1,24 +1,21 @@
 import dash
 import dash_auth
 import pandas as pd
-import pymysql
 import mysql.connector
 import dash.dependencies
-import dash_bootstrap_components as dbc
-import dash_html_components as html
-import dash_core_components as dcc
 from flask import request
 from time import strftime
 from modules.slides import slides
-#from dash import html, dcc #use for dash 2.0.0
+import dash_core_components as dcc
+import dash_html_components as html
 from mysql.connector import errorcode
-from modules.imagelist import imagelist
-#from modules.clouddata import cloud_data #Use if your images are saved in a cloud bucket
+import dash_bootstrap_components as dbc
+from modules.clouddata import cloud_data 
 from modules.slideimages import slideimages
+from modules.users import VALID_USERNAME_PASSWORD_PAIRS
 from dash_bootstrap_components._components.ModalBody import ModalBody
 from dash_bootstrap_components._components.ModalHeader import ModalHeader
 from dash_bootstrap_components._components.PopoverBody import PopoverBody
-from users import VALID_USERNAME_PASSWORD_PAIRS
 
 
 
@@ -35,12 +32,12 @@ dash_app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP],
 app = dash_app.server
 
 auth = dash_auth.BasicAuth(
-    dash_app,
+    dash_app, 
     VALID_USERNAME_PASSWORD_PAIRS
 )
 
 
-dash_app.title = "RHD Annotation Quality Control Check"
+dash_app.title = "RHD Data Annotation"
 
 list_of_validation = ['Correct', 'Not Correct']
 
@@ -58,11 +55,11 @@ db_password = "dsail2021"
 db_name = "rhd_db"
 host = '127.0.0.1' #local server
 port= '3306'
-cloud_sql_connection_name = "rhd-imaging-325212:us-west1:rhd-imaging" #use sql connection name given on GCP when hosting on GCP
+cloud_sql_connection_name = "rhd-imaging-340609:us-west2:rhd-imaging" #use sql connection name given on GCP when hosting on GCP
 unix_socket = "/cloudsql/{}".format(cloud_sql_connection_name)
 
 
-conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) #unix_socket=unix_socket
+conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) #host=host
 
 cursor = conn.cursor()
 
@@ -70,10 +67,10 @@ cursor = conn.cursor()
 def create_connection(conn):
     try:
         host = '127.0.0.1:3306'
-        conn = mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name) 
+        conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Something is wrong with your usrname or password")
+            print("Something is wrong with your username or password")
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database does not exist")
         else:
@@ -83,8 +80,8 @@ def create_connection(conn):
         
 #create a table in the rhd_db database and give it a connection
 TABLES = {}
-TABLES['rhdtest1'] = (
-    "CREATE TABLE `rhdtest1`("
+TABLES['rhdData'] = (
+    "CREATE TABLE `rhdData`("
     " `FILENAME` varchar(255) NOT NULL,"
     " `VIEW` varchar(255) NOT NULL,"
     " `COLOUR` varchar(255) NOT NULL,"
@@ -134,35 +131,33 @@ conn.close()
 
 
 x = 0 
-#imagenames = cloud_data("rhd_imaging_data")  #this is the cloud storage bucketname
-
 
 #Read the database to get list of images not labelled on the webApp
-conn =mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+conn =mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
 cursor = conn.cursor()
-df = pd.read_csv('sample.csv', encoding='utf-8')
+df = pd.read_csv('RHD-Data.csv', encoding='utf-8')
 annotation = []
 for index, row in df.iterrows():
     annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))   
     annotation.sort()
 
-df_db = pd.read_sql_query("SELECT * FROM rhdtest1 ",conn)
+df_db = pd.read_sql_query("SELECT * FROM rhdData ",conn)
 database = []
 database_paths = []
 for index, row in df_db.iterrows():
     database.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
     database.sort()
-    database_paths.append(('assets/' + row['FILENAME']))
+    database_paths.append(('https://storage.googleapis.com/rhd-imaging-data/' + row['FILENAME']))
     database_paths.sort()
 
 
 final_annotationlist = sorted(list(set(annotation) - set(database)))
-print(final_annotationlist)
+#print(final_annotationlist)
 
 
-images = imagelist("./assets/")
+images = cloud_data("rhd-imaging-data")   
 final_imagelist = sorted(list((set(images) - set(database_paths))))
-print(final_imagelist)
+#print(final_imagelist)
 
 cursor.close()
 conn.close()
@@ -298,7 +293,6 @@ def slide_ann(prev,next,prets,nexts,x):
 
 def update_output_data(validate,view,thickness,conditions,severity,n_clicks,timestamp,nex):
     username = request.authorization['username']
-    #address =  request.remote_addr
 
     y = 0
     x = 0
@@ -307,13 +301,13 @@ def update_output_data(validate,view,thickness,conditions,severity,n_clicks,time
             conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name)
             cursor = conn.cursor()
 
-            df = pd.read_csv('sample.csv', encoding='utf-8')
+            df = pd.read_csv('RHD-Data.csv', encoding='utf-8')
             annotation = []
             for index, row in df.iterrows():
                 annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))   
                 annotation.sort()
 
-            df_db = pd.read_sql_query("SELECT * FROM rhdtest1 ",conn)
+            df_db = pd.read_sql_query("SELECT * FROM rhdData ",conn)
             database = []
             for index, row in df_db.iterrows():
                 database.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
@@ -323,7 +317,7 @@ def update_output_data(validate,view,thickness,conditions,severity,n_clicks,time
             print(final_annotationlist)
 
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
-            add_annotation = """INSERT INTO rhdtest1 
+            add_annotation = """INSERT INTO rhdData
             (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,THICKNESS_STATE,CONDITIONS,SEVERITY,USER,TIMETAKEN)
             VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
@@ -331,7 +325,7 @@ def update_output_data(validate,view,thickness,conditions,severity,n_clicks,time
 
             
             cursor.execute(add_annotation,values)
-            print("Data annotated successfully.")
+            #print("Data annotated successfully.")
             conn.commit()
         
             cursor.close()
@@ -342,23 +336,23 @@ def update_output_data(validate,view,thickness,conditions,severity,n_clicks,time
             conn = mysql.connector.connect(user=db_user, password=db_password, unix_socket=unix_socket, db=db_name) 
             cursor = conn.cursor()
 
-            df = pd.read_csv('sample.csv', encoding='utf-8')
+            df = pd.read_csv('RHD-Data.csv', encoding='utf-8')
             annotation = []
             for index, row in df.iterrows():
                 annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))   
                 annotation.sort()
 
-            df_db = pd.read_sql_query("SELECT * FROM rhdtest1 ",conn)
+            df_db = pd.read_sql_query("SELECT * FROM rhdData ",conn)
             database = []
             for index, row in df_db.iterrows():
                 database.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
                 database.sort()
 
             final_annotationlist = sorted(list(set(annotation) - set(database)))
-            print(final_annotationlist)
+            #(final_annotationlist)
 
             timestamp = strftime("%Y-%m-%d %H:%M:%S")
-            add_annotation = """INSERT INTO rhdtest1 
+            add_annotation = """INSERT INTO rhdData 
             (FILENAME, VIEW, COLOUR,VALIDATE,VIEW_OF_ECHO,THICKNESS_STATE,CONDITIONS,SEVERITY,USER,TIMETAKEN)
             VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
