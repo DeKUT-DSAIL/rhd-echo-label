@@ -1,44 +1,88 @@
-def slides(pre,nex,prets,nexts,x,annotation):
+import pandas as pd
+import mysql.connector
+from modules.imagelist import imagelist
+from modules.dbcredentials import *
+
+
+#cloud_sql_mysql_create_socket
+db_user = db_user
+db_password = db_password
+db_name = db_name
+host = host #local server
+port = port
+cloud_sql_connection_name = cloud_sql_connection_name  #use sql connection name given on GCP when hosting on GCP
+unix_socket = unix_socket
+
+
+def slides(prev,next,prets,nexts,x,final_annotationlist):
+    conn =mysql.connector.connect(user=db_user, password=db_password, host=host, db=db_name)
+    cursor = conn.cursor()
+
+    df = pd.read_csv('sample.csv', encoding='utf-8')
+    annotation = []
+    for index, row in df.iterrows():
+        annotation.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR'])) 
+        annotation.sort()
+
+    df_db = pd.read_sql_query("SELECT * FROM rhdtest1 ",conn)
+    database = []
+    database_paths = []
+    for index, row in df_db.iterrows():
+        database.append((row['FILENAME'],' ',',',' ',row['VIEW'],' ',',',' ', row['COLOUR']))
+        database.sort()
+        database_paths.append(('assets/' + row['FILENAME']))
+        database_paths.sort()
+      
+
+    final_annotationlist = sorted(list(set(annotation) - set(database)))
+
+    images = imagelist("./assets/")
+    final_imagelist = sorted(list((set(images) - set(database_paths))))
+    print(final_imagelist)
+
+    cursor.close()
+    conn.close()
+
     x = 0
-    num_annotation = len(annotation) 
-        
-    annotation_state = annotation.index(annotation[x])
+    num_annotation = len(final_annotationlist) 
     
+    annotation_state = final_annotationlist.index(final_annotationlist[x])
 
     if prets == None or nexts == None:                                  
-        if pre == None and nex == None:                                                           
-            return annotation[x] 
-        if pre != None:
-            return annotation[x]
+        if prev == None and next == None:                                                           
+            return final_annotationlist[x] 
+        if prev != None:
+            return final_annotationlist[x]
             
-        if nex != None:
-            if nex < num_annotation:
-                annotation_state = nex
-                return annotation[x + nex]
-            if nex >= num_annotation - 1:
+        if next != None:
+            if next < num_annotation:
+                annotation_state = next
+                return final_annotationlist[x + next]
+            if next >= num_annotation - 1:
                 annotation_state = num_annotation - 1
-                return annotation[num_annotation - 1]
+                return final_annotationlist[num_annotation - 1]
         
 
 
     if prets != None or nexts != None:
-        if pre != None and nex != None:
-            if pre != None:
-                annotation_state = nex - pre
+        if prev != None and next != None:
+            if prev != None:
+                annotation_state = next - prev
                 if annotation_state >= 0 and annotation_state <= num_annotation - 1:
-                    return annotation[nex - pre]
+                    return final_annotationlist[next - prev]
                 if annotation_state <= 0:
                     annotation_state = 0
-                    return annotation[0]
+                    return final_annotationlist[0]
 
-            if nex != None:
-                if nex < num_annotation:
-                    annotation_state = nex
+            if next != None:
+                if next < num_annotation:
+                    annotation_state = next
                     if annotation_state > 0:
-                        return annotation[x + nex]
-                if nex >= num_annotation - 1:
+                        return final_annotationlist[x + next]
+                if next >= num_annotation - 1:
                     annotation_state = num_annotation - 1
-                    return annotation[num_annotation - 1]
+                    return final_annotationlist[num_annotation - 1]
+    
 
     elif annotation_state >= num_annotation or annotation_state < 0 : #guards against the upper and lower limits.
             if annotation_state >= num_annotation :#state never should go above len of list images.
@@ -47,13 +91,13 @@ def slides(pre,nex,prets,nexts,x,annotation):
                 annotation_state = annotation_state + 1
     else :                                              
         if prets > nexts and annotation_state > 0 : 
-            return annotation[annotation_state - 1]
+            return final_annotationlist[annotation_state - 1]
         if prets > nexts and annotation_state == 0 :
-            return annotation[annotation_state]
+            return final_annotationlist[annotation_state]
         if nexts >prets and annotation_state < (num_annotation - 1):
-            return annotation[annotation_state + 1]
+            return final_annotationlist[annotation_state + 1]
         if nexts >prets and annotation_state == (num_annotation -1 ):
-            return annotation[annotation_state]
+            return final_annotationlist[annotation_state]
 
    
                     

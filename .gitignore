@@ -1,5 +1,8 @@
 #username_password_pairs
-.rhd-imaging-app/modules/users.py
+modules/users.py
+
+#
+modules/dbcredentials.py
 
 #json key
 rhd-imaging-340609-3cf822cc62f1.json
