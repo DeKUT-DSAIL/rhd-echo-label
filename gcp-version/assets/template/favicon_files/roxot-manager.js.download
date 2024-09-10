@@ -1,0 +1,22 @@
+(function (c) {
+    if (isEngineInited()){
+        return;
+    }
+
+    let script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = 1;
+    script.src = c.managerUrl;
+    script.dataset.roxotInited = 'true';
+
+    let head = document.getElementsByTagName('head')[0];
+    head.insertBefore(script, head.firstChild);
+
+    window.rom = window.rom || {cmd: [], icmd: []};
+    window.rom.icmd = window.rom.icmd || [];
+    window.rom.icmd.push(c);
+
+    function isEngineInited(){
+        return  document.querySelectorAll('[data-roxot-inited]').length;
+    }
+})({"adBlockMode":"iframe","managerUrl":"https:\/\/cdn-plus.roxot-panel.com\/roxot-wrapper\/js\/roxot-manager-engine.js?v=s-2fafa32c-0c64-4469-aff7-3be6f96ff073","wrapperUrl":"https:\/\/cdn-plus.roxot-panel.com\/roxot-wrapper\/js\/roxot-wrapper.js?v=s-2fafa32c-0c64-4469-aff7-3be6f96ff073","placementConfigTemplate":"https:\/\/cdn-plus.roxot-panel.com\/wrapper-builder\/placement\/__PLACEMENT_ID__?v=d-a247e927-29f2-4953-8a5c-d43421bcb9a5","isLanguageSpecific":false,"hostConfig":{"unicode-table.com":{"wrapperOptions":[]}},"isBrowserSpecific":false,"isOsSpecific":false,"isDeviceTypeSpecific":false,"dynamicUrlTemplate":"https:\/\/cdn-plus.roxot-panel.com\/wrapper-builder\/39987cbf-8221-497b-984a-ed27241de46c\/dynamic.js?host=__HOST__&v=d-a247e927-29f2-4953-8a5c-d43421bcb9a5__s-2fafa32c-0c64-4469-aff7-3be6f96ff073","wrapperConfig":{"prebid":{"adjustment":{"mytarget":0.25,"segmento":0.85,"appnexus":0.9,"between":0.9},"path":"https:\/\/cdn-plus.roxot-panel.com\/roxot-wrapper\/js\/prebid.js?v=s-2fafa32c-0c64-4469-aff7-3be6f96ff073"},"adfox":{"hb":{"timeout":1000,"biddersMap":{"myTarget":"1355235","betweenDigital":"1355253","rtbhouse":"1393902","criteo":"1393905","getintent":"1393904","otm":"1393903","videonow":"1407059"}}}},"lazyLoading":[]})

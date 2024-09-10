@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo label</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+        .header {
+            background-color: #82b7eb; /* Changed to light blue */
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .heart-icon {
+            display: inline-block;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .progress-bar {
+        width: 100%;
+        background-color: #e0e0e0;
+        border-radius: 5px;
+        margin-bottom: 20px;
+            overflow: hidden; /* This will keep the progress within the bar */
+        }
+        .progress {
+            width: 0%;
+            height: 20px;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            transition: width 0.5s ease-in-out;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        img, video {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .btn {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        
+       
+        select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .required:after {
+            content: " *";
+            color: red;
+        }
+        .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+    }
+    .checkbox-item input[type="checkbox"] {
+        margin-right: 5px;
+    }
+
+    </style>
+    <!-- <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}"> -->
+
+</head>
+<body>
+    <div class="header">
+        <h1><span class="heart-icon">❤️</span> Echo Labeling</h1>
+    </div>
+
+    <div class="content">
+        <p>Welcome, {{ username }}!</p>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        
+        {% if file_to_label %}
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            
+            <form method="POST">
+                <input type="hidden" name="filename" value="{{ file_to_label }}">
+                <p>File to label: {{ file_to_label }}</p>
+                
+                {% if file_type == 'image' %}
+                    <img src="{{ url_for('static', filename='data/' + file_to_label) }}" alt="{{ file_to_label }}" style="max-width: 500px;">
+                {% elif file_type == 'video' %}
+                    <video width="500" controls preload="metadata">
+                        <source src="{{ url_for('serve_video', filename=file_to_label) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% endif %}
+                
+                <br><br>
+
+                <label for="view" class="required">VIEW:</label>
+                <select name="view" id="view" required>
+                    <option value="">Select the view of the echocardiogram</option>
+                    {% for option in list_of_views %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="colour" class="required">COLOUR:</label>
+                <select name="colour" id="colour" required>
+                    <option value="">Does the image/video have colour jet?</option>
+                    {% for option in list_of_colours %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="thickness_state" class="required">THICKNESS STATE:</label>
+                <select name="thickness_state" id="thickness_state" required>
+                    <option value="">Select the state of thickness</option>
+                    {% for option in list_of_thickness_state %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="thickness_comment">COMMENT ON THICKNESS:</label>
+                <textarea name="thickness_comment" id="thickness_comment" rows="2"></textarea>
+
+                <!-- <label for="conditions" class="required">CONDITIONSS:</label> -->
+                <label for="conditions" class="required">CONDITIONS:</label>
+                <select name="conditions" id="conditions" required>
+                    <option value="">Select the condition present</option>
+                    {% for option in list_of_conditions %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+                <!-- <fieldset>
+                    <legend class="required">CONDITIONS:</legend>
+                    <div class="checkbox-group">
+                        {% for option in list_of_conditions %}
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="condition_{{ loop.index }}" name="conditions[]" value="{{ option }}">
+                                <label for="condition_{{ loop.index }}">{{ option }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </fieldset> -->
+                <!-- <small>Select all applicable conditions</small>
+
+                <br> <br> -->
+
+                <label for="conditions_comment">COMMENT ON CONDITION(S):</label>
+                <textarea name="conditions_comment" id="conditions_comment" rows="2"></textarea>
+            
+
+                <label for="severity" class="required">SEVERITY:</label>
+                <select name="severity" id="severity" required>
+                    <option value="">Select Severity of RHD</option>
+                    {% for option in list_of_severities %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="echo_quality_comment">COMMENT ON ECHO QUALITY:</label>
+                <textarea name="echo_quality_comment" id="echo_quality_comment" rows="2" placeholder="e.g. off-axis"></textarea>
+
+                <input type="hidden" name="timetaken" id="timetaken" value="">
+                <button type="submit" class="btn" onclick="setTimeTaken()">Save Label and Go to Next</button>
+            </form>
+        {% else %}
+            <p>All files have been labeled. Great job!</p>
+            <p><a href="{{ url_for('home') }}">Return to Home</a></p>
+        {% endif %}
+        
+        <br>
+        <a href="{{ url_for('logout_route') }}">Logout</a>
+    </div>
+
+<!-- updating the progress bar -->
+<script>
+    function updateProgress(current, total) {
+        const progressBar = document.getElementById('progress');
+        if (progressBar) {
+            let percentage = Math.min((current / total) * 100, 100);
+            percentage = Math.max(percentage, 0);
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = Math.round(percentage) + '%';
+        }
+    }
+
+
+    
+    var current_file_index = 1;  // Example value
+        var total_files = 10;  // Example value
+
+        // Function to send data to the server
+        function sendProgressData() {
+            $.ajax({
+                url: '/update_progress',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    current_file_index: current_file_index,
+                    total_files: total_files
+                }),
+                success: function(response) {
+                    console.log('Progress data sent successfully');
+                },
+                error: function(error) {
+                    console.log('Error sending progress data:', error);
+                }
+            });
+        }
+
+        // Call the function to send data
+        sendProgressData();
+
+</script>
+
+</body>
+</html>

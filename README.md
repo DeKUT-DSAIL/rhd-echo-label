@@ -1,39 +1,69 @@
-# RHD-imaging-App
-This web application will be used to label the Rheumatic Heart Disease data provided by Dr. Liesl Zuhlke.
+# echo-
 
-## RHD Data
-The data we got originally was in the form of images and videos of echocardiograms. We needed to annotate this data train a model using machine learning algorithms.
+# Echo Label
 
-As a first step in this project, we will concentrate on the view of the heart as parasternal long axis view(PLAX) or not. We will also concentrate on whether the images and videos of the echocardiograms have colour or not. The idea of having a colour classifier is to help identify leaking heart valves.
-The web Application will be used by experts of echocardiograms to validate our annotation.
+Echo Label  is a web application designed for labeling image and video data. It provides a user-friendly interface for users to log in, view unlabeled files, and assign labels to them.
 
-![Screenshot (298)](https://user-images.githubusercontent.com/74656615/133057040-c2cfd21a-7ac7-429d-94ee-edab3845c9c2.png)
+## Features
 
-## Web Application Deployment
-This web app is developed using [Dash](https://dash.plotly.com/) and has been deployed here: [RHD imaging Web app](https://rhd-imaging-325212.uw.r.appspot.com/).
+- User authentication (registration and login)
+- Display of image and video files for labeling
+- Label submission and storage in a database
+- Automatic progression to the next unlabeled file
 
-  # Steps taken to deploy the app on GCP
-  
-  I followed steps outlined a [blog post](https://www.phillipsj.net/posts/deploying-dash-to-google-app-engine/) by [Jamie Phillips](https://www.phillipsj.net/)
-  
-  1. Create a virtual environment and activate it.
-              
-         python -m venv rhd-env
-  2. Install requirements that are in the requirements.txt file.
-         
-         pip install -r requirements.txt
-  3. Create a app.yaml configure it.
-  
-  5. Download and install [Google Cloud SDK](https://cloud.google.com/sdk/docs/install). 
-     From the Google Cloud SDK terminal change into the directory where you have saved your main.py, requirements.txt and app.yaml files. 
-     
-     (The default behaviour of Google App engine is to assume the entrypoint is located in a file called main.py).
-     
-     Enter y if prompted for a y/n response.
-          
-          gcloud app deploy --promote
-     
+## Requirements
 
+To run this web application, you'll need:
 
+1. Python 3.7+
+2. Flask
+3. Flask-MySQLdb
+4. MySQL database
 
+## Installation
 
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/echo-labelv1.git
+   cd echo-labelv1
+   ```
+
+2. Install the required Python packages:
+   ```
+   pip install Flask Flask-MySQLdb
+   ```
+
+3. Set up a MySQL database and update the configuration in `app/app.py`:
+   ```python
+   app.config['MYSQL_HOST'] = 'your_mysql_host'
+   app.config['MYSQL_USER'] = 'your_mysql_user'
+   app.config['MYSQL_PASSWORD'] = 'your_mysql_password'
+   app.config['MYSQL_DB'] = 'your_database_name'
+   ```
+
+4. Create a folder `app/static/data` and place your image and video files there.
+
+## Running the Application
+
+1. Set the Flask app environment variable:
+   ```
+   export FLASK_APP=app/app.py
+   ```
+
+2. Run the Flask development server:
+   ```
+   flask run
+   ```
+
+3. Access the application in your web browser at `http://localhost:5000`.
+
+## Usage
+
+1. Register a new account or log in with existing credentials.
+2. You will be presented with unlabeled files one at a time.
+3. Enter a label for each file and submit.
+4. Continue labeling until all files are processed.
+
+## Note
+
+Ensure that your MySQL server is running and accessible before starting the application. Also, make sure to set appropriate file permissions for the data folder and its contents.

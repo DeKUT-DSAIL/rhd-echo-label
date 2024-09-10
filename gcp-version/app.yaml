@@ -1,0 +1,18 @@
+runtime: python37
+
+
+env_variables:
+  CLOUD_STORAGE_BUCKET: rhd_imaging_data
+  
+
+
+instance_class: F4_1G
+
+
+
+
+
+
+
+
+
